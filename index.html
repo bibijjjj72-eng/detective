@@ -1261,7 +1261,12 @@ function goBack(){SFX.tap();
   if(current==='quest'&&(quest.view==='mission'||quest.view==='reward')){quest.showMap();return;}
   showScreen('menu');
 }
-$$('.game-card').forEach(c=>c.onclick=()=>{SFX.tap();showScreen(c.dataset.game);});
+const MENU_DISABLED=['drill','memory','quest'];
+$$('.game-card').forEach(c=>{
+  if(MENU_DISABLED.includes(c.dataset.game))return;
+  c.onclick=()=>{SFX.tap();showScreen(c.dataset.game);};
+});
+
 $$('.back-btn').forEach(b=>b.onclick=goBack);
 document.addEventListener('keydown',e=>{
   if(e.target.matches('input,select,textarea'))return;

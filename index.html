@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a3fae">
+<title>Детектив-смартфон — учись, играя, будь в безопасности!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ============ ПАЛИТРА И БАЗА ============ */
+:root{
+  --navy:#0d2f7a; --navy2:#123a8f; --blue:#1565d8; --blue-deep:#0b46b8;
+  --sky:#2f9bff; --sky2:#7fd4ff; --gold:#ffc93c; --gold2:#ffd76a;
+  --amber:#ff9800; --amber-deep:#d97b00; --cream:#fff6da;
+  --sub:#5c74c9; --green:#22b573; --green-deep:#0e8f57;
+  --red:#ff4d5e; --red-deep:#d92637; --magenta:#ff4fa0; --info:#28c3e8;
+  --card-hi:#ffffff; --card-lo:#e9f3ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scrollbar-color:#ffb300 #0a3fae;scrollbar-width:thin}
+::-webkit-scrollbar{width:12px}
+::-webkit-scrollbar-track{background:#0a3fae}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#ffd76a,#ff9800);border-radius:8px;border:3px solid #0a3fae}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#ffe27a,#ffb300)}
+body{
+  font-family:'Nunito',system-ui,'Segoe UI',sans-serif;
+  color:var(--navy); min-height:100vh; overflow-x:hidden;
+  background:linear-gradient(180deg,#0a3fae 0%,#1266e0 24%,#2f9bff 56%,#1160d6 82%,#0a3fae 100%) fixed;
+  -webkit-tap-highlight-color:transparent;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;touch-action:manipulation}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+b{font-weight:900}
+
+/* ============ ФОН: СВЕЧЕНИЕ, ПУЗЫРИ, ВОЛНЫ, ЗЕРНО ============ */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55}
+.b1{width:420px;height:420px;left:-140px;top:6%;background:#37b6ff;animation:drift 26s ease-in-out infinite alternate}
+.b2{width:360px;height:360px;right:-120px;top:34%;background:#0b46b8;animation:drift 32s ease-in-out infinite alternate-reverse}
+.b3{width:300px;height:300px;left:20%;bottom:-100px;background:#5fd0ff;opacity:.35;animation:drift 22s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(50px,-40px) scale(1.12)}}
+.bub{position:absolute;bottom:-70px;border-radius:50%;background:radial-gradient(circle at 32% 30%,rgba(255,255,255,.5),rgba(255,255,255,.08) 60%,transparent);border:1px solid rgba(255,255,255,.35);animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(0);opacity:0}8%{opacity:.8}90%{opacity:.5}100%{transform:translateY(-115vh);opacity:0}}
+.grain{position:absolute;inset:0;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E")}
+.waves{position:absolute;left:0;right:0;bottom:0;width:100%;height:150px}
+
+/* ============ ВЕРХНЯЯ ПЛАШКА С АВТОРАМИ ============ */
+.topbar{
+  position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:10px;
+  padding:8px 14px;background:rgba(255,250,235,.95);backdrop-filter:blur(6px);
+  border-bottom:2px solid rgba(13,47,122,.16);box-shadow:0 4px 16px rgba(6,32,96,.22);
+}
+.tb-left{display:flex;align-items:center;gap:8px;flex:none}
+.sound-btn{width:40px;height:40px;border-radius:50%;background:#fff;border:2px solid #cfe0f8;display:grid;place-items:center;box-shadow:0 3px 0 #cfe0f8;transition:.15s}
+.sound-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #cfe0f8}
+.sound-btn svg{width:22px;height:22px}
+.chip{background:#fff;border:2px solid var(--gold);border-radius:999px;padding:5px 11px;font-weight:900;font-size:13px;color:var(--navy);white-space:nowrap;box-shadow:0 3px 8px rgba(6,32,96,.12)}
+.chip-max{color:var(--sub);font-size:11px}
+.credits{margin-left:auto;text-align:right;font-size:11.5px;line-height:1.4;font-weight:800;color:#1a3fa0}
+
+/* ============ КАРКАС ============ */
+.app{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:16px 16px 40px}
+.screen{display:none}
+.screen.active{display:block;animation:screenIn .4s cubic-bezier(.2,.8,.3,1)}
+@keyframes screenIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+/* ============ ГЛАВНОЕ МЕНЮ: ГЕРОЙ ============ */
+.hero{position:relative;display:grid;grid-template-columns:1fr 1.15fr;align-items:center;min-height:280px;margin-bottom:10px}
+.bubble{
+  position:relative;z-index:2;background:#fff;border-radius:26px;padding:16px 18px;
+  font-size:17px;font-weight:800;line-height:1.35;color:var(--navy);margin-right:-24px;
+  filter:drop-shadow(0 12px 20px rgba(6,32,96,.3));animation:screenIn .5s .1s backwards;
+}
+.bubble::after{content:'';position:absolute;right:-9px;bottom:34px;width:22px;height:22px;background:#fff;transform:rotate(45deg);border-radius:4px}
+.robot-wrap{position:relative;animation:floaty 4.5s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.robot-svg{width:100%;max-width:310px;display:block;margin-left:auto;filter:drop-shadow(0 16px 22px rgba(6,32,96,.35))}
+.bot-eyes{animation:blink 4.8s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+.bot-glint{animation:glint 3s ease-in-out infinite}
+@keyframes glint{0%,100%{opacity:.35}50%{opacity:1}}
+.bot-orb{animation:orbPulse 2.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes orbPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
+.hero-sparks{position:absolute;left:44%;top:2px;width:72px;z-index:3;animation:sparkle 2.2s ease-in-out infinite}
+@keyframes sparkle{0%,100%{opacity:.6;transform:scale(.94)}50%{opacity:1;transform:scale(1.06)}}
+
+/* ============ КАРТОЧКИ МЕНЮ ============ */
+.menu-list{display:flex;flex-direction:column;gap:13px}
+.game-card{
+  position:relative;display:flex;align-items:center;gap:14px;width:100%;text-align:left;
+  padding:13px 15px;border-radius:26px;overflow:hidden;
+  background:linear-gradient(180deg,var(--card-hi),var(--card-lo));
+  box-shadow:0 12px 26px rgba(6,32,96,.3),inset 0 2px 0 rgba(255,255,255,.95);
+  transition:transform .18s cubic-bezier(.2,.8,.3,1.4),box-shadow .18s;
+  animation:cardIn .5s backwards;
+}
+.game-card:nth-child(1){animation-delay:.12s}.game-card:nth-child(2){animation-delay:.2s}
+.game-card:nth-child(3){animation-delay:.28s}.game-card:nth-child(4){animation-delay:.36s}
+.game-card:nth-child(5){animation-delay:.44s}
+@keyframes cardIn{from{opacity:0;transform:translateY(26px) scale(.96)}to{opacity:1;transform:none}}
+.game-card::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.65) 50%,transparent 70%);transform:translateX(-130%);transition:transform .6s;pointer-events:none}
+.game-card:hover{transform:translateY(-3px) scale(1.012);box-shadow:0 18px 32px rgba(6,32,96,.36),inset 0 2px 0 #fff}
+.game-card:hover::after{transform:translateX(130%)}
+.game-card:active{transform:scale(.975)}
+.gc-icon{flex:none;width:76px;height:76px;display:grid;place-items:center}
+.gc-icon svg{width:100%;height:100%;filter:drop-shadow(0 5px 6px rgba(6,32,96,.25))}
+.gc-text{flex:1;min-width:0}
+.gc-title{display:block;font-size:20px;font-weight:900;color:var(--navy);line-height:1.15}
+.gc-sub{display:block;font-size:13.5px;font-weight:700;color:var(--sub);line-height:1.3;margin-top:3px}
+.gc-stars{display:flex;gap:2px;margin-top:5px}
+.gc-arrow{
+  flex:none;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 32% 26%,#ffd76a,#ffb300 58%,#ff9100);
+  border:3px solid rgba(255,255,255,.9);
+  box-shadow:0 5px 0 var(--amber-deep),0 10px 18px rgba(217,123,0,.45);
+  transition:transform .18s;
+}
+.game-card:hover .gc-arrow{transform:translateX(4px)}
+.gc-arrow svg{width:24px;height:24px;filter:drop-shadow(0 2px 2px rgba(160,80,0,.5))}
+
+/* ============ БАННЕР С КУБКОМ ============ */
+.banner{
+  display:flex;align-items:center;gap:14px;margin-top:20px;padding:12px 22px;border-radius:999px;
+  background:linear-gradient(180deg,#fff8e1,#ffe9a8);border:3px solid var(--gold2);
+  box-shadow:0 12px 24px rgba(6,32,96,.3);animation:cardIn .5s .55s backwards;
+}
+.banner svg{width:62px;height:62px;flex:none;filter:drop-shadow(0 4px 5px rgba(160,90,0,.35))}
+.banner-text{flex:1;text-align:center;font-size:17.5px;font-weight:900;line-height:1.3;color:var(--navy)}
+
+/* ============ ШАПКИ ИГР ============ */
+.game-head{display:flex;align-items:center;gap:12px;margin:4px 0 16px}
+.back-btn{flex:none;width:46px;height:46px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 5px 0 #c9d8f2,0 10px 16px rgba(6,32,96,.3);transition:.15s}
+.back-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #c9d8f2}
+.back-btn svg{width:22px;height:22px}
+.gh-title{font-size:21px;font-weight:900;color:#fff;text-shadow:0 2px 10px rgba(6,32,96,.5);line-height:1.1}
+.gh-chip{margin-left:auto;flex:none;background:rgba(255,255,255,.95);border-radius:999px;padding:6px 12px;font-weight:900;font-size:13px;color:var(--navy);box-shadow:0 4px 10px rgba(6,32,96,.25)}
+
+/* ============ ОБЩИЕ ПАНЕЛИ И КНОПКИ ============ */
+.panel{background:linear-gradient(180deg,#fff,#eef5ff);border-radius:24px;padding:18px;box-shadow:0 12px 26px rgba(6,32,96,.3),inset 0 2px 0 #fff}
+.sub-note{font-size:12.5px;font-weight:700;color:var(--sub);margin-top:10px;line-height:1.4}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:900;font-size:16px;border-radius:999px;padding:13px 22px;transition:transform .15s,box-shadow .15s;user-select:none}
+.btn-block{display:flex;width:100%;margin-top:14px}
+.btn-amber{color:#fff;background:linear-gradient(180deg,#ffb300,#ff9100);box-shadow:0 5px 0 var(--amber-deep),0 10px 18px rgba(217,123,0,.4);text-shadow:0 1px 2px rgba(160,80,0,.4)}
+.btn-amber:hover{transform:translateY(-2px)}
+.btn-amber:active{transform:translateY(3px);box-shadow:0 2px 0 var(--amber-deep)}
+.btn-amber:disabled{opacity:.5;transform:none;cursor:default}
+.btn-green{color:#fff;background:linear-gradient(180deg,#2fd08a,#0e9f5f);box-shadow:0 5px 0 var(--green-deep),0 10px 18px rgba(14,143,87,.4)}
+.btn-green:active{transform:translateY(3px);box-shadow:0 2px 0 var(--green-deep)}
+.btn-green:disabled{opacity:.45;cursor:default;transform:none}
+.btn-white{color:var(--navy);background:#fff;border:2px solid #cfe0f8;box-shadow:0 4px 0 #cfe0f8}
+.btn-white:active{transform:translateY(3px);box-shadow:0 1px 0 #cfe0f8}
+.tx-green{color:var(--green-deep)}.tx-red{color:var(--red-deep)}
+.shake{animation:shake .45s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+
+/* ============ РЕЗУЛЬТАТЫ ============ */
+.result-box{text-align:center;padding:26px 20px}
+.res-mood svg{width:118px;height:104px;filter:drop-shadow(0 6px 8px rgba(6,32,96,.25))}
+.res-title{font-size:24px;font-weight:900;margin-top:6px}
+.res-score{font-size:17px;font-weight:800;color:var(--sub);margin-top:4px}
+.res-stars{display:flex;justify-content:center;gap:10px;margin:14px 0 6px}
+.star-big{display:inline-block;transform:scale(0);animation:popStar .5s cubic-bezier(.2,.8,.3,1.6) forwards}
+.star-big.earned svg{filter:drop-shadow(0 4px 8px rgba(255,152,0,.55))}
+@keyframes popStar{from{transform:scale(0) rotate(-40deg)}to{transform:scale(1) rotate(0)}}
+.res-sub{font-size:14.5px;font-weight:700;color:var(--sub);line-height:1.45}
+.res-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.medal{font-size:64px;line-height:1;animation:popStar .6s cubic-bezier(.2,.8,.3,1.6)}
+
+/* ============ ВИКТОРИНА ============ */
+.q-top{display:flex;justify-content:space-between;font-weight:900;color:#fff;font-size:14px;text-shadow:0 2px 6px rgba(6,32,96,.5);margin-bottom:8px}
+.q-bar{height:12px;border-radius:999px;background:rgba(255,255,255,.35);overflow:hidden;margin-bottom:14px;box-shadow:inset 0 2px 4px rgba(6,32,96,.25)}
+.q-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#ffd76a,#ff9800);transition:width .4s cubic-bezier(.2,.8,.3,1)}
+.q-icon{font-size:44px;text-align:center;line-height:1}
+.q-text{font-size:18.5px;font-weight:900;text-align:center;line-height:1.3;margin:10px 0 16px}
+.q-opts{display:flex;flex-direction:column;gap:10px}
+.q-opt{display:flex;align-items:center;gap:12px;text-align:left;padding:12px 14px;border-radius:18px;background:#f2f7ff;border:2px solid #d7e6ff;font-size:15.5px;font-weight:800;color:var(--navy);transition:.15s;line-height:1.3}
+.q-opt:not(:disabled):hover{border-color:var(--sky);background:#fff;transform:translateY(-2px)}
+.q-opt .letter{flex:none;width:32px;height:32px;border-radius:50%;background:linear-gradient(180deg,#4aa8ff,#1565d8);color:#fff;display:grid;place-items:center;font-weight:900;font-size:14px;box-shadow:0 3px 0 var(--blue-deep)}
+.q-opt.correct{background:#e4f9ee;border-color:var(--green)}
+.q-opt.correct .letter{background:linear-gradient(180deg,#2fd08a,#0e9f5f);box-shadow:0 3px 0 var(--green-deep)}
+.q-opt.wrong{background:#ffe9ec;border-color:var(--red);animation:shake .45s}
+.q-opt.wrong .letter{background:linear-gradient(180deg,#ff6b7d,#e0293c);box-shadow:0 3px 0 var(--red-deep)}
+.q-opt.dim{opacity:.55}
+.q-fact{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;background:#fff8e1;border:2px solid var(--gold2);border-radius:16px;padding:13px;animation:screenIn .35s}
+.q-fact>span{font-size:22px}
+.q-fact p{flex:1;min-width:200px;font-size:13.5px;font-weight:700;line-height:1.45;color:#6b5200}
+.q-fact .btn{margin-top:4px}
+
+/* ============ КОМИКС ============ */
+.comic-panel{position:relative;border:4px solid var(--navy);border-radius:20px;padding:18px 16px 16px;background:#fff;background-image:radial-gradient(rgba(21,101,216,.13) 1.5px,transparent 1.6px);background-size:14px 14px;box-shadow:0 12px 26px rgba(6,32,96,.35);overflow:hidden}
+.comic-tag{position:absolute;top:10px;left:-4px;background:var(--gold);color:var(--navy);font-weight:900;font-size:12px;padding:4px 12px;border-radius:0 10px 10px 0;border:2px solid var(--navy);transform:rotate(-2deg);box-shadow:0 3px 6px rgba(6,32,96,.25)}
+.scene{margin-top:22px}
+.intro-scene{display:flex;align-items:center;gap:14px;justify-content:center;padding:8px 0}
+.intro-scene svg{width:110px;height:96px;flex:none}
+.intro-txt b{display:block;font-size:24px;font-weight:900;color:var(--navy);letter-spacing:1px}
+.intro-txt span{display:block;font-size:15px;font-weight:800;color:var(--red-deep)}
+.chat{background:#eef4fb;border:2px solid #d5e4f7;border-radius:16px;padding:12px}
+.chat-head{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:2px dashed #d5e4f7;margin-bottom:10px}
+.avatar{flex:none;width:38px;height:38px;border-radius:50%;background:linear-gradient(180deg,#c9d8f2,#8fb0e0);display:grid;place-items:center;font-size:19px;border:2px solid #fff}
+.chat-head b{display:block;font-size:14px}
+.chat-head i{display:block;font-style:normal;font-size:11px;color:var(--green-deep);font-weight:700}
+.chat-robot{margin-left:auto}
+.chat-robot svg{width:52px;height:46px}
+.msg{background:#fff;border-radius:14px 14px 14px 4px;padding:10px 12px;font-size:14px;font-weight:700;line-height:1.4;margin-bottom:8px;box-shadow:0 3px 6px rgba(6,32,96,.1);animation:screenIn .4s backwards}
+.msg:nth-child(3){animation-delay:.25s}
+.msg-link{color:var(--red-deep);text-decoration:underline dashed;font-weight:900}
+.board{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:6px 0}
+.note{padding:12px 10px;border-radius:6px;font-size:13px;font-weight:800;box-shadow:0 5px 10px rgba(6,32,96,.2);border:2px solid rgba(13,47,122,.2)}
+.n1{background:#fff3b0;transform:rotate(-3deg)}.n2{background:#d9f2ff;transform:rotate(2deg)}.n3{background:#ffe1ec;transform:rotate(-1.5deg)}
+.caption{font-size:15px;font-weight:800;line-height:1.4;margin:14px 0 12px;text-align:center}
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice-btn{text-align:left;padding:13px 15px;border-radius:14px;background:#fff;border:3px solid var(--navy);font-size:14.5px;font-weight:800;color:var(--navy);box-shadow:0 4px 0 var(--navy);transition:.15s;line-height:1.35}
+.choice-btn:not(:disabled):hover{transform:translateY(-2px);background:#fff8e1}
+.choice-btn:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 var(--navy)}
+.choice-btn.good{background:#e4f9ee;border-color:var(--green-deep);box-shadow:0 4px 0 var(--green-deep)}
+.choice-btn.badpick{background:#ffe9ec;border-color:var(--red-deep);box-shadow:0 4px 0 var(--red-deep);animation:shake .45s}
+.choice-btn:disabled{cursor:default;opacity:.85}
+.consequence{border-radius:14px;padding:13px;font-size:13.5px;font-weight:800;line-height:1.45;animation:screenIn .35s}
+.consequence.good{background:#e4f9ee;border:2px solid var(--green);color:var(--green-deep)}
+.consequence.bad{background:#ffe9ec;border:2px solid var(--red);color:var(--red-deep)}
+.page-dots{display:flex;justify-content:center;gap:8px;margin-top:14px}
+.dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.45);transition:.2s}
+.dot.on{background:var(--gold);transform:scale(1.3);box-shadow:0 0 8px rgba(255,201,60,.8)}
+
+/* ============ ТРЕНИРОВКА ============ */
+.drill-start{text-align:center;padding:26px 20px}
+.ds-icons{font-size:40px;letter-spacing:8px}
+.drill-start h3{font-size:22px;font-weight:900;margin:10px 0 8px}
+.drill-start p{font-size:14.5px;font-weight:700;color:var(--sub);line-height:1.5}
+.drill-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-weight:900;color:#fff;text-shadow:0 2px 6px rgba(6,32,96,.5)}
+.hearts{font-size:17px;letter-spacing:2px}
+.streak-chip{background:linear-gradient(180deg,#ffb300,#ff6d00);border-radius:999px;padding:4px 10px;font-size:12.5px;box-shadow:0 3px 8px rgba(200,80,0,.5);animation:popStar .35s cubic-bezier(.2,.8,.3,1.6)}
+.d-count{margin-left:auto;font-size:13.5px}
+.drill-card{min-height:196px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;transition:transform .45s cubic-bezier(.4,0,.8,1),opacity .45s}
+.drill-card.pop-in{animation:screenIn .35s}
+.dc-emoji{font-size:46px;line-height:1}
+.dc-sender{font-size:12px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:.6px}
+.dc-text{font-size:17.5px;font-weight:900;line-height:1.35;max-width:340px}
+.fly-left{transform:translateX(-130%) rotate(-14deg)!important;opacity:0}
+.fly-right{transform:translateX(130%) rotate(14deg)!important;opacity:0}
+.timer{height:10px;border-radius:999px;background:rgba(255,255,255,.35);overflow:hidden;margin:14px 0;box-shadow:inset 0 2px 4px rgba(6,32,96,.25)}
+.timer-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#2fd08a,#22b573)}
+.timer-fill.mid{background:linear-gradient(90deg,#ffd76a,#ff9800)}
+.timer-fill.low{background:linear-gradient(90deg,#ff6b7d,#e0293c);animation:pulseLow .5s infinite}
+@keyframes pulseLow{50%{opacity:.6}}
+.drill-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.big-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:14px 8px;border-radius:20px;font-size:24px;font-weight:900;color:#fff;transition:transform .15s,box-shadow .15s}
+.big-btn span{font-size:15.5px}
+.safe-btn{background:linear-gradient(180deg,#2fd08a,#0e9f5f);box-shadow:0 6px 0 var(--green-deep),0 12px 20px rgba(14,143,87,.4)}
+.danger-btn{background:linear-gradient(180deg,#ff6b7d,#e0293c);box-shadow:0 6px 0 var(--red-deep),0 12px 20px rgba(217,38,55,.4)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.big-btn.hint{animation:hintPulse .5s 2}
+@keyframes hintPulse{50%{transform:scale(1.06);filter:brightness(1.25)}}
+.key-hint{text-align:center;color:rgba(255,255,255,.85);font-size:12px;font-weight:700;margin-top:12px;text-shadow:0 1px 4px rgba(6,32,96,.5)}
+@media (hover:none){.key-hint{display:none}}
+
+/* ============ ЛОГИКА: ПАМЯТЬ + РЯДЫ ============ */
+.mode-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip-btn{background:rgba(255,255,255,.9);border:2px solid transparent;border-radius:999px;padding:8px 14px;font-weight:900;font-size:13.5px;color:var(--navy);box-shadow:0 4px 10px rgba(6,32,96,.25);transition:.15s}
+.chip-btn.on{background:linear-gradient(180deg,#ffd76a,#ffb300);border-color:#fff;color:#5b3a00;box-shadow:0 4px 0 var(--amber-deep)}
+.chip-btn.small{padding:6px 11px;font-size:12px}
+.mem-stats{display:flex;gap:10px;flex-wrap:wrap;font-weight:900;color:#fff;font-size:13.5px;text-shadow:0 2px 6px rgba(6,32,96,.5);margin-bottom:12px}
+.mem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mem-card{position:relative;aspect-ratio:4/5;perspective:700px;padding:0}
+.mem-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.2,.7,.3,1.15)}
+.mem-card.flipped .mem-inner{transform:rotateY(180deg)}
+.mem-face{position:absolute;inset:0;border-radius:16px;display:grid;place-items:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;font-size:clamp(26px,7vw,38px)}
+.mem-back{background:linear-gradient(160deg,#4aa8ff,#1565d8 60%,#0b46b8);border:3px solid rgba(255,255,255,.85);color:#fff;font-weight:900;font-size:clamp(24px,6vw,34px);box-shadow:0 6px 12px rgba(6,32,96,.35);text-shadow:0 2px 4px rgba(6,32,96,.5)}
+.mem-back::after{content:'';position:absolute;inset:6px;border-radius:10px;border:2px dashed rgba(255,255,255,.35)}
+.mem-front{background:linear-gradient(180deg,#fff,#e9f3ff);border:3px solid #cfe0f8;transform:rotateY(180deg);box-shadow:0 6px 12px rgba(6,32,96,.3)}
+.mem-card.matched .mem-front{border-color:var(--green);box-shadow:0 0 0 3px rgba(34,181,115,.4),0 6px 14px rgba(14,143,87,.4);animation:matchPop .4s cubic-bezier(.2,.8,.3,1.6)}
+@keyframes matchPop{50%{transform:rotateY(180deg) scale(1.1)}}
+.mem-card.matched{pointer-events:none}
+.seq-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0 18px}
+.seq-tile{width:54px;height:54px;border-radius:14px;background:#f2f7ff;border:2px solid #cfe0f8;display:grid;place-items:center;font-size:25px;font-weight:900;color:var(--navy)}
+.seq-tile.seq-missing{background:#fff8e1;border:3px dashed var(--amber);color:var(--amber-deep);animation:pulseLow 1.2s infinite}
+.seq-tile.good{background:#e4f9ee;border-color:var(--green);border-style:solid;animation:matchPop2 .4s}
+@keyframes matchPop2{50%{transform:scale(1.15)}}
+.seq-opts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.seq-opt{width:62px;height:62px;border-radius:16px;background:#fff;border:3px solid var(--navy);font-size:26px;font-weight:900;color:var(--navy);box-shadow:0 4px 0 var(--navy);transition:.15s}
+.seq-opt:not(:disabled):hover{transform:translateY(-3px);background:#fff8e1}
+.seq-opt.right{background:#e4f9ee;border-color:var(--green-deep);box-shadow:0 4px 0 var(--green-deep)}
+.seq-opt.wrong{background:#ffe9ec;border-color:var(--red-deep);box-shadow:0 4px 0 var(--red-deep);animation:shake .45s}
+.seq-hint{text-align:center;font-size:13px;font-weight:800;color:var(--sub);margin-top:14px;min-height:18px}
+.seq-title{text-align:center;font-size:17px;font-weight:900}
+
+/* ============ КВЕСТЫ ============ */
+.quest-hello{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.quest-hello .qh-txt{flex:1;min-width:180px}
+.quest-hello h3{font-size:18px;font-weight:900}
+.quest-hello p{font-size:13px;font-weight:700;color:var(--sub);line-height:1.4;margin-top:2px}
+.name-input{width:150px;border:2px solid #cfe0f8;border-radius:12px;padding:9px 12px;font-family:inherit;font-weight:800;font-size:14px;color:var(--navy);background:#f6faff}
+.quest-map{position:relative;display:flex;flex-direction:column;gap:12px;padding-left:6px}
+.quest-map::before{content:'';position:absolute;left:33px;top:20px;bottom:20px;border-left:3px dashed rgba(255,255,255,.55)}
+.q-node{position:relative;display:flex;align-items:center;gap:13px;width:100%;text-align:left;animation:cardIn .4s backwards}
+.q-node:nth-child(2){animation-delay:.07s}.q-node:nth-child(3){animation-delay:.14s}.q-node:nth-child(4){animation-delay:.21s}.q-node:nth-child(5){animation-delay:.28s}
+.qn-badge{flex:none;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:25px;border:3px solid #fff;box-shadow:0 6px 12px rgba(6,32,96,.35);z-index:1}
+.q-node.open .qn-badge{background:radial-gradient(circle at 32% 26%,#ffd76a,#ff9800)}
+.q-node.done .qn-badge{background:radial-gradient(circle at 32% 26%,#2fd08a,#0e9f5f)}
+.q-node.locked .qn-badge{background:linear-gradient(180deg,#b9cdf0,#8fb0e0)}
+.qn-card{flex:1;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#fff,#eef5ff);border-radius:18px;padding:12px 14px;box-shadow:0 8px 18px rgba(6,32,96,.3);transition:.15s}
+.q-node:not(.locked):hover .qn-card{transform:translateX(4px)}
+.q-node.locked{opacity:.62;cursor:default}
+.qn-card b{display:block;font-size:15.5px;font-weight:900}
+.qn-card i{display:block;font-style:normal;font-size:12px;font-weight:700;color:var(--sub);margin-top:2px}
+.qn-status{margin-left:auto;flex:none;font-size:13px;font-weight:900}
+.q-node.done .qn-status{color:var(--green-deep)}
+.q-node.open .qn-status{color:var(--amber-deep)}
+.reset-btn{display:block;margin:18px auto 0;font-size:12.5px;font-weight:800;color:rgba(255,255,255,.9);text-decoration:underline dashed;text-shadow:0 1px 4px rgba(6,32,96,.5)}
+.reset-btn.arm{color:#ffe27a;font-weight:900}
+.mis-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.mis-badge{font-size:34px;filter:drop-shadow(0 3px 5px rgba(6,32,96,.4))}
+.mis-title{font-size:19px;font-weight:900;margin-bottom:4px}
+.mis-desc{font-size:13.5px;font-weight:700;color:var(--sub);line-height:1.45;margin-bottom:14px}
+.pw-field{display:flex;align-items:center;min-height:54px;background:#0e2a66;border-radius:14px;padding:10px 14px;overflow-x:auto;box-shadow:inset 0 3px 8px rgba(0,0,0,.4)}
+.pw-text{font-size:22px;font-weight:900;color:var(--sky2);letter-spacing:3px;white-space:nowrap}
+.pw-caret{width:3px;height:26px;background:var(--gold);margin-left:3px;animation:caret 1s steps(2) infinite;flex:none}
+@keyframes caret{50%{opacity:0}}
+.pw-actions{display:flex;gap:8px;margin:10px 0}
+.pw-actions .btn{padding:8px 14px;font-size:13px}
+.pw-tiles{display:grid;grid-template-columns:repeat(8,1fr);gap:7px}
+.pw-tile{aspect-ratio:1;border-radius:12px;background:#f2f7ff;border:2px solid #cfe0f8;font-size:18px;font-weight:900;color:var(--navy);box-shadow:0 3px 0 #cfe0f8;transition:.1s}
+.pw-tile:active{transform:translateY(2px);box-shadow:0 1px 0 #cfe0f8;background:#fff8e1}
+.meter{display:flex;gap:5px;margin:14px 0 10px}
+.seg{flex:1;height:10px;border-radius:999px;background:#dbe7fa;transition:.25s}
+.seg.on{background:linear-gradient(90deg,#ffd76a,#ff9800)}
+.seg.on.full{background:linear-gradient(90deg,#2fd08a,#22b573)}
+.pw-checks{display:flex;flex-direction:column;gap:5px}
+.check-row{font-size:13px;font-weight:800;color:var(--sub);transition:.2s}
+.check-row.ok{color:var(--green-deep)}
+.phish-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:400px){.phish-grid{grid-template-columns:1fr}}
+.ph-card{position:relative;text-align:left;padding:12px;border-radius:16px;background:#f6faff;border:2px solid #cfe0f8;transition:.15s;line-height:1.35}
+.ph-card .ph-e{font-size:24px}
+.ph-card b{display:block;font-size:13.5px;margin:4px 0 2px;word-break:break-all}
+.ph-card span{display:block;font-size:12px;font-weight:700;color:var(--sub)}
+.ph-card.sel{border-color:var(--navy);background:#eaf3ff;box-shadow:0 0 0 3px rgba(21,101,216,.25)}
+.ph-card.sel::after{content:'🔍';position:absolute;top:8px;right:8px;font-size:16px}
+.ph-card.miss{border-color:var(--amber);animation:hintPulse .5s 2}
+.ph-card.oops{border-color:var(--red);background:#ffe9ec;animation:shake .45s}
+.ph-feedback{font-size:13px;font-weight:800;color:var(--red-deep);margin-top:10px;min-height:18px}
+.priv-row{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:2px dashed #dbe7fa;font-size:14px;font-weight:800}
+.priv-row.warn{background:#fff3e0;border-radius:10px;padding-left:8px;padding-right:8px}
+.priv-row .pr-label{flex:1;line-height:1.3}
+.switch{position:relative;width:50px;height:28px;flex:none}
+.switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1}
+.switch i{position:absolute;inset:0;background:#c9d8f2;border:2px solid #a9c0e8;border-radius:999px;transition:.25s;pointer-events:none}
+.switch i::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(13,47,122,.35);transition:.25s}
+.switch input:checked+i{background:var(--green);border-color:var(--green-deep)}
+.switch input:checked+i::after{transform:translateX(22px)}
+.priv-select{appearance:none;-webkit-appearance:none;border:2px solid #cfe0f8;border-radius:12px;padding:8px 30px 8px 12px;font-family:inherit;font-weight:800;font-size:13px;color:var(--navy);background:#f6faff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230d2f7a' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;cursor:pointer}
+.priv-meter{font-size:13.5px;font-weight:900;margin-top:12px}
+.cipher-slots{display:flex;gap:8px;justify-content:center;margin:6px 0 16px}
+.c-slot{width:46px;height:52px;border-radius:12px;border:3px dashed #b9cdf0;background:#f6faff;font-size:23px;font-weight:900;color:var(--navy);transition:.15s}
+.c-slot.filled{border-style:solid;border-color:var(--blue);background:#eaf3ff}
+.cipher-bank{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.c-tile{width:48px;height:48px;border-radius:12px;background:linear-gradient(180deg,#ffd76a,#ffb300);border:2px solid #fff;font-size:21px;font-weight:900;color:#5b3a00;box-shadow:0 4px 0 var(--amber-deep);transition:.12s}
+.c-tile:active{transform:translateY(3px);box-shadow:0 1px 0 var(--amber-deep)}
+.c-tile.used{visibility:hidden}
+.exam-note{border-radius:12px;padding:11px;font-size:13px;font-weight:800;line-height:1.4;margin-top:10px;background:#ffe9ec;border:2px solid var(--red);color:var(--red-deep);animation:screenIn .3s}
+.diploma{position:relative;text-align:center;background:linear-gradient(180deg,#fff8e1,#ffefc2);border:4px solid var(--gold);border-radius:22px;padding:26px 20px;box-shadow:0 14px 30px rgba(6,32,96,.35),inset 0 0 0 3px #fff}
+.dip-kicker{font-size:12px;font-weight:900;letter-spacing:3px;color:var(--amber-deep)}
+.dip-title{font-size:30px;font-weight:900;letter-spacing:4px;margin:4px 0 10px}
+.diploma .res-mood svg{width:100px;height:88px}
+.dip-name{font-size:24px;font-weight:900;color:var(--blue-deep);margin:8px 0 4px}
+.dip-text{font-size:14px;font-weight:800;line-height:1.5;color:#6b5200}
+.dip-badges{font-size:26px;letter-spacing:6px;margin:12px 0 4px}
+.dip-date{font-size:12px;font-weight:800;color:var(--sub)}
+.dip-seal{position:absolute;right:14px;bottom:14px;width:64px;height:64px;border-radius:50%;border:3px solid var(--blue-deep);color:var(--blue-deep);display:grid;place-items:center;font-size:10px;font-weight:900;transform:rotate(-14deg);opacity:.85;line-height:1.2;text-align:center}
+
+/* ============ ТОСТ И КОНФЕТТИ ============ */
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,80px);z-index:600;background:var(--navy);color:#fff;font-weight:800;font-size:14px;padding:11px 20px;border-radius:999px;box-shadow:0 10px 24px rgba(6,32,96,.5);opacity:0;transition:.3s cubic-bezier(.2,.8,.3,1.3);pointer-events:none;max-width:88vw;text-align:center}
+#toast.show{transform:translate(-50%,0);opacity:1}
+#fx{position:fixed;inset:0;z-index:500;pointer-events:none}
+
+/* ============ АДАПТИВ ============ */
+@media(max-width:430px){
+  .credits{font-size:10px}
+  .bubble{font-size:14.5px;padding:13px 14px}
+  .hero{min-height:236px}
+  .gc-icon{width:60px;height:60px}
+  .gc-title{font-size:17.5px}
+  .gc-sub{font-size:12px}
+  .gc-arrow{width:46px;height:46px}
+  .banner-text{font-size:15px}
+  .gh-title{font-size:17px}
+  .pw-tiles{grid-template-columns:repeat(8,1fr);gap:5px}
+  .pw-tile{font-size:15px;border-radius:9px}
+  .c-slot{width:40px;height:46px;font-size:20px}
+  .c-tile{width:42px;height:42px;font-size:18px}
+  .seq-tile{width:46px;height:46px;font-size:21px}
+  .seq-opt{width:54px;height:54px;font-size:22px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* ============ СТАРТОВАЯ СТРАНИЦА И ЗНАКОМСТВО ============ */
+body[data-screen="start"] .topbar,
+body[data-screen="intro"] .topbar{display:none}
+
+.start-screen{position:relative;min-height:86vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px 18px 78px}
+.start-title{font-size:32px;font-weight:900;color:#fff;letter-spacing:.5px;text-shadow:0 3px 14px rgba(6,32,96,.55)}
+.start-sub{font-size:15px;font-weight:800;color:#eaf3ff;max-width:340px;line-height:1.45;text-shadow:0 2px 6px rgba(6,32,96,.5)}
+.start-frame{border:4px solid #fff;border-radius:28px;padding:10px;box-shadow:0 18px 40px rgba(6,32,96,.42);max-width:420px;width:100%;animation:cardIn .5s backwards}
+.start-frame img{display:block;width:100%;height:auto;border-radius:20px}
+.start-btn{font-size:20px;padding:16px 42px;margin-top:4px}
+.start-credits{position:absolute;right:14px;bottom:12px;text-align:right;font-size:11.5px;font-weight:800;line-height:1.45;color:#dbe9ff;text-shadow:0 1px 4px rgba(6,32,96,.65);max-width:64%}
+
+.intro-screen{min-height:86vh;display:flex;align-items:center;justify-content:center;padding:20px 16px 40px}
+.intro-panel{width:100%;max-width:440px;animation:screenIn .4s}
+.intro-panel h2{font-size:26px;font-weight:900;text-align:center;margin-bottom:6px}
+.intro-lead{font-size:14px;font-weight:700;color:var(--sub);text-align:center;margin-bottom:18px;line-height:1.45}
+.field{margin-bottom:14px;text-align:left}
+.field label{display:block;font-size:13.5px;font-weight:900;color:var(--navy);margin-bottom:6px}
+.field label .req{color:var(--red-deep)}
+.field input{width:100%;border:2px solid #cfe0f8;border-radius:14px;padding:13px 14px;font-family:inherit;font-weight:800;font-size:15px;color:var(--navy);background:#f6faff;transition:border-color .15s,background .15s,box-shadow .15s}
+.field input::placeholder{color:#9db3dd;font-weight:700}
+.field input:focus{border-color:var(--sky);background:#fff;outline:none;box-shadow:0 0 0 3px rgba(47,155,255,.25)}
+.field.invalid input{border-color:var(--red);background:#fff1f3}
+.field .err{display:none;font-size:12px;font-weight:800;color:var(--red-deep);margin-top:5px}
+.field.invalid .err{display:block}
+.intro-note{font-size:12px;font-weight:700;color:var(--sub);text-align:center;margin:4px 0 16px;line-height:1.45}
+@media(max-width:430px){.start-title{font-size:26px}.start-credits{font-size:10px;max-width:70%}}
+</style>
+</head>
+<body data-screen="start">
+
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<div class="bg" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <span class="bub" style="left:6%;width:26px;height:26px;animation-duration:21s"></span>
+  <span class="bub" style="left:18%;width:14px;height:14px;animation-duration:17s;animation-delay:4s"></span>
+  <span class="bub" style="left:37%;width:34px;height:34px;animation-duration:27s;animation-delay:2s"></span>
+  <span class="bub" style="left:58%;width:18px;height:18px;animation-duration:19s;animation-delay:7s"></span>
+  <span class="bub" style="left:74%;width:28px;height:28px;animation-duration:24s;animation-delay:1s"></span>
+  <span class="bub" style="left:88%;width:15px;height:15px;animation-duration:16s;animation-delay:5s"></span>
+  <span class="bub" style="left:94%;width:22px;height:22px;animation-duration:23s;animation-delay:9s"></span>
+  <svg class="waves" viewBox="0 0 1000 150" preserveAspectRatio="none">
+    <path d="M0 150 C60 92 160 88 240 118 C170 146 70 152 0 150 Z" fill="#ffc93c"/>
+    <path d="M0 150 C50 116 120 112 180 132 C120 150 50 152 0 150 Z" fill="#ff9800" opacity=".85"/>
+    <path d="M1000 150 C940 84 830 82 750 116 C830 146 930 152 1000 150 Z" fill="#ffc93c"/>
+    <path d="M1000 150 C950 112 880 110 815 132 C880 150 950 152 1000 150 Z" fill="#ff9800" opacity=".85"/>
+  </svg>
+  <div class="grain"></div>
+</div>
+
+<!-- Верхняя плашка: авторы (как на втором фото) + звук и звёзды -->
+<header class="topbar">
+  <div class="tb-left">
+    <button type="button" class="sound-btn" id="sound-btn" aria-pressed="true" title="Выключить звук" aria-label="Звук">
+      <svg id="snd-on" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#0d2f7a"/><path d="M16 9c1.4 1.6 1.4 4.4 0 6M18.5 6.5c2.8 3 2.8 8 0 11" stroke="#1565d8" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg id="snd-off" viewBox="0 0 24 24" fill="none" hidden><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#8fb0e0"/><path d="M16 9l6 6M22 9l-6 6" stroke="#d92637" stroke-width="2.4" stroke-linecap="round"/></svg>
+    </button>
+    <span class="chip" id="stars-chip">⭐ 0<span class="chip-max">/15</span></span>
+  </div>
+</header>
+
+<main class="app">
+
+      <!-- ================= СТАРТОВАЯ СТРАНИЦА ================= -->
+  <section id="screen-start" class="screen active">
+    <div class="start-screen">
+      <h1 class="start-title">Детектив-смартфон</h1>
+      <p class="start-sub">Интерактивный тренажёр по безопасности в интернете от робота Байте</p>
+      <div class="start-frame">
+        <img src="img1.png" alt="детектив с лупой">
+      </div>
+      <button type="button" class="btn btn-amber start-btn" id="start-btn">Начать 🚀</button>
+      <div class="start-credits">
+        Филиал ДО «ЦДО» г. Мирный в п. Чернышевский<br>
+        Разработчик: Терехов Е.И.<br>
+        Дизайнер: Богартинова Э.М.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ЗНАКОМСТВО ================= -->
+  <section id="screen-intro" class="screen">
+    <div class="intro-screen">
+      <div class="panel intro-panel">
+        <h2>Давай познакомимся! 👋</h2>
+        <p class="intro-lead">Чтобы байт-агентство записало тебя в свою базу, заполни анкету. Все поля обязательны.</p>
+        <div class="field" data-wrap="surname">
+          <label for="in-surname">Фамилия <span class="req">*</span></label>
+          <input id="in-surname" type="text" maxlength="40" autocomplete="family-name" placeholder="Например, Иванов">
+          <p class="err">Укажите фамилию</p>
+        </div>
+        <div class="field" data-wrap="name">
+          <label for="in-name">Имя <span class="req">*</span></label>
+          <input id="in-name" type="text" maxlength="40" autocomplete="given-name" placeholder="Например, Алексей">
+          <p class="err">Укажите имя</p>
+        </div>
+        <div class="field" data-wrap="email">
+          <label for="in-email">E-mail родителей <span class="req">*</span></label>
+          <input id="in-email" type="email" maxlength="80" autocomplete="email" placeholder="mama@pochta.ru">
+          <p class="err">Введите корректный e-mail (например, name@mail.ru)</p>
+        </div>
+        <p class="intro-note">🔒 Данные нужны только для тренировки и никуда не отправляются — они хранятся лишь в памяти твоего устройства.</p>
+        <button type="button" class="btn btn-amber btn-block" id="next-btn" disabled>Далее →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ГЛАВНОЕ МЕНЮ ================= -->
+  <section id="screen-menu" class="screen">
+    <div class="hero">
+      <svg class="hero-sparks" viewBox="0 0 72 60" aria-hidden="true">
+        <path d="M14 44 L6 28 M32 34 L30 14 M50 32 L60 14" stroke="#ffc93c" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+      <div class="bubble">Выбери игру и стань настоящим детективом в&nbsp;мире интернета!</div>
+      <div class="robot-wrap">
+        <!-- Робот Байт -->
+        <svg class="robot-svg" viewBox="0 0 340 360" role="img" aria-label="Робот-детектив Байт с лупой и щитом">
+          <defs>
+            <radialGradient id="rb-halo" cx="50%" cy="45%" r="55%">
+              <stop offset="0%" stop-color="#fff3b0"/><stop offset="55%" stop-color="#ffd94f"/>
+              <stop offset="86%" stop-color="#ffc93c"/><stop offset="100%" stop-color="#ffc93c" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="rb-body" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#cfe0f8"/></linearGradient>
+            <linearGradient id="rb-face" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1a4aa0"/><stop offset="100%" stop-color="#081d48"/></linearGradient>
+            <radialGradient id="rb-orb" cx="35%" cy="30%" r="75%"><stop offset="0%" stop-color="#eafaff"/><stop offset="55%" stop-color="#7fd4ff"/><stop offset="100%" stop-color="#2f9bff"/></radialGradient>
+            <linearGradient id="rb-ear" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd76a"/><stop offset="100%" stop-color="#ff9800"/></linearGradient>
+            <linearGradient id="rb-chest" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#57c1ff"/><stop offset="100%" stop-color="#1565d8"/></linearGradient>
+            <linearGradient id="rb-hand" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4aa8ff"/><stop offset="100%" stop-color="#1565d8"/></linearGradient>
+            <linearGradient id="rb-wood" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#a9743d"/><stop offset="100%" stop-color="#7a4e22"/></linearGradient>
+            <radialGradient id="rb-glass" cx="35%" cy="30%" r="80%"><stop offset="0%" stop-color="#ffffff" stop-opacity=".95"/><stop offset="60%" stop-color="#cfeeff" stop-opacity=".8"/><stop offset="100%" stop-color="#9fd8ff" stop-opacity=".75"/></radialGradient>
+            <linearGradient id="rb-rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4aa8ff"/><stop offset="100%" stop-color="#1565d8"/></linearGradient>
+            <linearGradient id="rb-shield" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4aa8ff"/><stop offset="100%" stop-color="#0b46b8"/></linearGradient>
+            <linearGradient id="rb-foot" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2f9bff"/><stop offset="100%" stop-color="#0b46b8"/></linearGradient>
+          </defs>
+          <circle cx="200" cy="158" r="132" fill="url(#rb-halo)"/>
+          <!-- антенна -->
+          <rect x="193" y="36" width="10" height="34" rx="5" fill="#9fb9e8" stroke="#0d2f7a" stroke-width="4"/>
+          <circle class="bot-orb" cx="198" cy="29" r="17" fill="url(#rb-orb)" stroke="#0d2f7a" stroke-width="5"/>
+          <circle cx="192" cy="23" r="5" fill="#fff" opacity=".9"/>
+          <!-- уши -->
+          <circle cx="122" cy="120" r="17" fill="url(#rb-ear)" stroke="#0d2f7a" stroke-width="5"/>
+          <circle cx="274" cy="120" r="17" fill="url(#rb-ear)" stroke="#0d2f7a" stroke-width="5"/>
+          <!-- голова -->
+          <rect x="126" y="64" width="144" height="112" rx="50" fill="url(#rb-body)" stroke="#0d2f7a" stroke-width="6"/>
+          <rect x="142" y="80" width="112" height="80" rx="36" fill="url(#rb-face)" stroke="#0a2456" stroke-width="4"/>
+          <ellipse cx="198" cy="92" rx="44" ry="11" fill="#fff" opacity=".12"/>
+          <g class="bot-eyes">
+            <ellipse cx="172" cy="116" rx="12" ry="14" fill="#fff"/>
+            <circle cx="172" cy="119" r="7" fill="#2f9bff"/><circle cx="172" cy="120" r="4" fill="#071a3d"/>
+            <circle cx="169" cy="113" r="2.6" fill="#fff"/><circle cx="176" cy="123" r="1.3" fill="#fff"/>
+            <ellipse cx="224" cy="116" rx="12" ry="14" fill="#fff"/>
+            <circle cx="224" cy="119" r="7" fill="#2f9bff"/><circle cx="224" cy="120" r="4" fill="#071a3d"/>
+            <circle cx="221" cy="113" r="2.6" fill="#fff"/><circle cx="228" cy="123" r="1.3" fill="#fff"/>
+          </g>
+          <path d="M182 138 Q198 152 214 138 Q212 156 198 156 Q184 156 182 138 Z" fill="#3d0f26"/>
+          <ellipse cx="198" cy="150" rx="8" ry="4.5" fill="#ff6b8a"/>
+          <ellipse cx="156" cy="136" rx="7" ry="4" fill="#7fd4ff" opacity=".5"/>
+          <ellipse cx="240" cy="136" rx="7" ry="4" fill="#7fd4ff" opacity=".5"/>
+          <!-- шея и корпус -->
+          <rect x="186" y="174" width="24" height="14" fill="#9fb9e8" stroke="#0d2f7a" stroke-width="4"/>
+          <rect x="146" y="186" width="104" height="96" rx="34" fill="url(#rb-body)" stroke="#0d2f7a" stroke-width="6"/>
+          <rect x="164" y="204" width="68" height="48" rx="14" fill="url(#rb-chest)" stroke="#0a2456" stroke-width="4"/>
+          <rect x="178" y="215" width="40" height="22" rx="8" fill="#fff"/>
+          <path d="M186 236 l-4 9 l11 -7 z" fill="#fff"/>
+          <circle cx="188" cy="226" r="2.6" fill="#1565d8"/><circle cx="198" cy="226" r="2.6" fill="#1565d8"/><circle cx="208" cy="226" r="2.6" fill="#1565d8"/>
+          <rect x="160" y="266" width="76" height="8" rx="4" fill="#c7d9f5"/>
+          <!-- ноги -->
+          <rect x="166" y="280" width="22" height="30" rx="10" fill="url(#rb-body)" stroke="#0d2f7a" stroke-width="5"/>
+          <rect x="208" y="280" width="22" height="30" rx="10" fill="url(#rb-body)" stroke="#0d2f7a" stroke-width="5"/>
+          <ellipse cx="177" cy="314" rx="18" ry="10" fill="url(#rb-foot)" stroke="#0d2f7a" stroke-width="5"/>
+          <ellipse cx="219" cy="314" rx="18" ry="10" fill="url(#rb-foot)" stroke="#0d2f7a" stroke-width="5"/>
+          <!-- левая рука с лупой -->
+          <circle cx="150" cy="198" r="12" fill="url(#rb-body)" stroke="#0d2f7a" stroke-width="5"/>
+          <path d="M150 200 Q116 192 104 164" stroke="#0d2f7a" stroke-width="22" stroke-linecap="round" fill="none"/>
+          <path d="M150 200 Q116 192 104 164" stroke="#d6e6ff" stroke-width="13" stroke-linecap="round" fill="none"/>
+          <rect x="86" y="116" width="14" height="54" rx="7" transform="rotate(35 93 143)" fill="url(#rb-wood)" stroke="#5b3a17" stroke-width="4"/>
+          <circle cx="102" cy="160" r="14" fill="url(#rb-hand)" stroke="#0d2f7a" stroke-width="5"/>
+          <path d="M96 154 q6 -3 12 0 M96 162 q6 -3 12 0" stroke="#0d2f7a" stroke-width="2" opacity=".4" fill="none"/>
+          <circle cx="76" cy="96" r="34" fill="url(#rb-glass)" stroke="#0d2f7a" stroke-width="15"/>
+          <circle cx="76" cy="96" r="34" fill="none" stroke="url(#rb-rim)" stroke-width="9"/>
+          <path class="bot-glint" d="M58 84 Q68 70 84 72" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <!-- правая рука со щитом -->
+          <circle cx="246" cy="200" r="12" fill="url(#rb-body)" stroke="#0d2f7a" stroke-width="5"/>
+          <path d="M246 202 Q250 224 250 238" stroke="#0d2f7a" stroke-width="22" stroke-linecap="round" fill="none"/>
+          <path d="M246 202 Q250 224 250 238" stroke="#d6e6ff" stroke-width="13" stroke-linecap="round" fill="none"/>
+          <circle cx="248" cy="243" r="13" fill="url(#rb-hand)" stroke="#0d2f7a" stroke-width="5"/>
+          <path d="M292 154 L334 170 V214 Q334 250 292 266 Q250 250 250 214 V170 Z" fill="url(#rb-shield)" stroke="#0d2f7a" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M292 165 L324 178 V213 Q324 242 292 255 Q260 242 260 213 V178 Z" fill="none" stroke="#ffd23f" stroke-width="4.5" stroke-linejoin="round"/>
+          <path d="M274 210 L288 226 L312 192" stroke="#0d2f7a" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M274 210 L288 226 L312 192" stroke="#ffd23f" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="menu-list">
+      <button type="button" class="game-card" data-game="quiz">
+        <span class="gc-icon"><svg viewBox="0 0 96 96">
+          <defs><linearGradient id="ic-clip-p" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#e2eeff"/></linearGradient>
+          <linearGradient id="ic-clip-m" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#cfe0f8"/><stop offset="100%" stop-color="#8fb0e0"/></linearGradient>
+          <radialGradient id="ic-clip-b" cx="35%" cy="30%" r="80%"><stop offset="0%" stop-color="#ffd76a"/><stop offset="100%" stop-color="#ff9800"/></radialGradient></defs>
+          <rect x="18" y="14" width="56" height="72" rx="10" fill="url(#ic-clip-p)" stroke="#1565d8" stroke-width="5"/>
+          <rect x="34" y="8" width="24" height="14" rx="6" fill="url(#ic-clip-m)" stroke="#0d2f7a" stroke-width="4"/>
+          <path d="M26 36 l5 5 l9 -10 M26 50 l5 5 l9 -10 M26 64 l5 5 l9 -10" stroke="#1565d8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <rect x="48" y="32" width="18" height="5" rx="2.5" fill="#b9d2f2"/><rect x="48" y="46" width="14" height="5" rx="2.5" fill="#b9d2f2"/><rect x="48" y="60" width="17" height="5" rx="2.5" fill="#b9d2f2"/>
+          <circle cx="72" cy="72" r="16" fill="url(#ic-clip-b)" stroke="#fff" stroke-width="4"/>
+          <text x="72" y="79.5" text-anchor="middle" font-size="21" font-weight="900" fill="#fff" font-family="Nunito,sans-serif">?</text>
+        </svg></span>
+        <span class="gc-text"><span class="gc-title">Викторина</span><span class="gc-sub">Проверь свои знания и&nbsp;узнай важное!</span><span class="gc-stars" data-stars="quiz"></span></span>
+        <span class="gc-arrow"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+
+      <button type="button" class="game-card" data-game="comic">
+        <span class="gc-icon"><svg viewBox="0 0 96 96">
+          <defs><linearGradient id="ic-book-p" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#e2eeff"/></linearGradient>
+          <linearGradient id="ic-book-f" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd9a8"/><stop offset="100%" stop-color="#f0b070"/></linearGradient></defs>
+          <path d="M80 14 L86 6 M88 24 L94 20" stroke="#ffc93c" stroke-width="5" stroke-linecap="round"/>
+          <path d="M48 26 Q30 16 14 22 V70 Q30 64 48 74 Z" fill="url(#ic-book-p)" stroke="#0d2f7a" stroke-width="5" stroke-linejoin="round"/>
+          <path d="M48 26 Q66 16 82 22 V70 Q66 64 48 74 Z" fill="url(#ic-book-p)" stroke="#0d2f7a" stroke-width="5" stroke-linejoin="round"/>
+          <path d="M14 70 Q30 64 48 74 Q66 64 82 70 L82 77 Q66 71 48 81 Q30 71 14 77 Z" fill="#1565d8" stroke="#0d2f7a" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M48 26 V74" stroke="#0d2f7a" stroke-width="4"/>
+          <rect x="22" y="31" width="10" height="9" rx="2" fill="#ffb300"/><rect x="35" y="29" width="9" height="9" rx="2" fill="#4aa8ff"/><rect x="22" y="46" width="22" height="5" rx="2.5" fill="#b9d2f2"/>
+          <rect x="55" y="30" width="10" height="9" rx="2" fill="#4aa8ff"/><rect x="68" y="32" width="8" height="8" rx="2" fill="#ffb300"/><rect x="55" y="46" width="20" height="5" rx="2.5" fill="#b9d2f2"/>
+          <circle cx="68" cy="63" r="13" fill="#2b2b33"/>
+          <circle cx="68" cy="67" r="11" fill="url(#ic-book-f)" stroke="#0d2f7a" stroke-width="3.5"/>
+          <path d="M55 63 Q68 48 81 63 L81 60 Q68 50 55 60 Z" fill="#2b2b33"/>
+          <rect x="57" y="61" width="22" height="8" rx="4" fill="#17171f"/>
+          <circle cx="63" cy="65" r="2.6" fill="#fff"/><circle cx="73" cy="65" r="2.6" fill="#fff"/>
+          <path d="M64 73 q4 3 8 0" stroke="#7a4e22" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        </svg></span>
+        <span class="gc-text"><span class="gc-title">Комикс-детектив</span><span class="gc-sub">Прочитай историю и&nbsp;помоги герою!</span><span class="gc-stars" data-stars="comic"></span></span>
+        <span class="gc-arrow"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+
+      <button type="button" class="game-card" data-game="drill">
+        <span class="gc-icon"><svg viewBox="0 0 96 96">
+          <defs><linearGradient id="ic-pad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4aa8ff"/><stop offset="100%" stop-color="#1565d8"/></linearGradient></defs>
+          <path d="M76 16 L82 8 M86 26 L93 22" stroke="#ffc93c" stroke-width="5" stroke-linecap="round"/>
+          <path d="M28 30 H68 Q84 30 86 48 Q88 66 78 70 Q70 73 62 64 L58 60 H38 L34 64 Q26 73 18 70 Q8 66 10 48 Q12 30 28 30 Z" fill="url(#ic-pad)" stroke="#0d2f7a" stroke-width="5" stroke-linejoin="round"/>
+          <path d="M30 37 H64" stroke="#bfe6ff" stroke-width="6" stroke-linecap="round" opacity=".65"/>
+          <path d="M29 41 h8 v6 h6 v8 h-6 v6 h-8 v-6 h-6 v-8 h6 Z" fill="#ffd23f" stroke="#e07f00" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="62" cy="42" r="4.5" fill="#ffd23f" stroke="#e07f00" stroke-width="2"/>
+          <circle cx="70" cy="49" r="4.5" fill="#ffb300" stroke="#e07f00" stroke-width="2"/>
+          <circle cx="62" cy="56" r="4.5" fill="#ff9800" stroke="#e07f00" stroke-width="2"/>
+          <circle cx="54" cy="49" r="4.5" fill="#ffe27a" stroke="#e07f00" stroke-width="2"/>
+        </svg></span>
+        <span class="gc-text"><span class="gc-title">Игры-упражнения</span><span class="gc-sub">Тренируй навыки безопасности в&nbsp;сети!</span><span class="gc-stars" data-stars="drill"></span></span>
+        <span class="gc-arrow"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+
+      <button type="button" class="game-card" data-game="memory">
+        <span class="gc-icon"><svg viewBox="0 0 96 96">
+          <defs><linearGradient id="ic-pz-b" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4aa8ff"/><stop offset="100%" stop-color="#1565d8"/></linearGradient>
+          <linearGradient id="ic-pz-y" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd76a"/><stop offset="100%" stop-color="#ff9800"/></linearGradient></defs>
+          <path d="M54 46 H62 Q60 36 70 36 Q80 36 78 46 H86 Q90 46 90 50 V82 Q90 86 86 86 H54 Q50 86 50 82 V50 Q50 46 54 46 Z" fill="url(#ic-pz-y)" stroke="#0d2f7a" stroke-width="5" stroke-linejoin="round"/>
+          <path d="M56 78 H82" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".5"/>
+          <path d="M18 12 H50 Q54 12 54 16 V22 Q64 20 64 30 Q64 40 54 38 V48 Q54 52 50 52 H18 Q14 52 14 48 V16 Q14 12 18 12 Z" fill="url(#ic-pz-b)" stroke="#0d2f7a" stroke-width="5" stroke-linejoin="round"/>
+          <path d="M21 19 H44" stroke="#bfe6ff" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+        </svg></span>
+        <span class="gc-text"><span class="gc-title">Игры на логику</span><span class="gc-sub">Решай задачки и&nbsp;находи решения!</span><span class="gc-stars" data-stars="memory"></span></span>
+        <span class="gc-arrow"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+
+      <button type="button" class="game-card" data-game="quest">
+        <span class="gc-icon"><svg viewBox="0 0 96 96">
+          <defs><linearGradient id="ic-sh-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd76a"/><stop offset="100%" stop-color="#ff9800"/></linearGradient>
+          <linearGradient id="ic-sh-f" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#dbe9ff"/></linearGradient>
+          <linearGradient id="ic-sh-l" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4aa8ff"/><stop offset="100%" stop-color="#1565d8"/></linearGradient></defs>
+          <path d="M48 8 L82 20 V48 Q82 76 48 90 Q14 76 14 48 V20 Z" fill="url(#ic-sh-g)" stroke="#0d2f7a" stroke-width="5" stroke-linejoin="round"/>
+          <path d="M48 16 L74 26 V48 Q74 68 48 80 Q22 68 22 48 V26 Z" fill="url(#ic-sh-f)" stroke="#e07f00" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M38 45 V38 Q38 28 48 28 Q58 28 58 38 V45" fill="none" stroke="#1565d8" stroke-width="7" stroke-linecap="round"/>
+          <rect x="34" y="44" width="28" height="24" rx="6" fill="url(#ic-sh-l)" stroke="#0d2f7a" stroke-width="4"/>
+          <circle cx="48" cy="54" r="4" fill="#fff"/><rect x="46" y="56" width="4" height="7" rx="2" fill="#fff"/>
+        </svg></span>
+        <span class="gc-text"><span class="gc-title">Квесты и миссии</span><span class="gc-sub">Проходи задания и&nbsp;получай награды!</span><span class="gc-stars" data-stars="quest"></span></span>
+        <span class="gc-arrow"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+    </div>
+
+    <div class="banner">
+      <svg viewBox="0 0 96 96" aria-hidden="true">
+        <defs><linearGradient id="ic-tr" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe27a"/><stop offset="100%" stop-color="#ff9800"/></linearGradient></defs>
+        <path d="M28 18 H16 Q14 34 30 40" fill="none" stroke="#e09a00" stroke-width="7" stroke-linecap="round"/>
+        <path d="M68 18 H80 Q82 34 66 40" fill="none" stroke="#e09a00" stroke-width="7" stroke-linecap="round"/>
+        <path d="M28 14 H68 V38 Q68 56 48 58 Q28 56 28 38 Z" fill="url(#ic-tr)" stroke="#b87400" stroke-width="4" stroke-linejoin="round"/>
+        <rect x="26" y="10" width="44" height="8" rx="4" fill="#ffe27a" stroke="#b87400" stroke-width="3"/>
+        <rect x="33" y="20" width="6" height="18" rx="3" fill="#fff" opacity=".55"/>
+        <path d="M48 24 L51 31 L58 31 L52.5 35.5 L54.5 43 L48 38.5 L41.5 43 L43.5 35.5 L38 31 L45 31 Z" fill="#fff"/>
+        <rect x="44" y="58" width="8" height="10" fill="#ffb300" stroke="#b87400" stroke-width="3"/>
+        <rect x="32" y="67" width="32" height="8" rx="3" fill="url(#ic-tr)" stroke="#b87400" stroke-width="3"/>
+        <rect x="28" y="75" width="40" height="9" rx="3" fill="#e09a00" stroke="#b87400" stroke-width="3"/>
+      </svg>
+      <div class="banner-text">Учись. Играя.<br>Будь в безопасности!</div>
+    </div>
+  </section>
+
+  <!-- ================= ИГРОВЫЕ ЭКРАНЫ ================= -->
+  <section id="screen-quiz" class="screen">
+    <div class="game-head">
+      <button type="button" class="back-btn" aria-label="Назад в меню"><svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="#0d2f7a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2 class="gh-title">Викторина</h2><span class="gh-chip" id="quiz-chip">1/8</span>
+    </div>
+    <div id="quiz-body"></div>
+  </section>
+
+  <section id="screen-comic" class="screen">
+    <div class="game-head">
+      <button type="button" class="back-btn" aria-label="Назад в меню"><svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="#0d2f7a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2 class="gh-title">Комикс-детектив</h2><span class="gh-chip" id="comic-chip">🔍 0/3</span>
+    </div>
+    <div id="comic-body"></div>
+  </section>
+
+  <section id="screen-drill" class="screen">
+    <div class="game-head">
+      <button type="button" class="back-btn" aria-label="Назад в меню"><svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="#0d2f7a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2 class="gh-title">Игры-упражнения</h2><span class="gh-chip" id="drill-chip">Очки: 0</span>
+    </div>
+    <div id="drill-body"></div>
+  </section>
+
+  <section id="screen-memory" class="screen">
+    <div class="game-head">
+      <button type="button" class="back-btn" aria-label="Назад в меню"><svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="#0d2f7a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2 class="gh-title">Игры на логику</h2><span class="gh-chip" id="memory-chip">00:00</span>
+    </div>
+    <div id="memory-body"></div>
+  </section>
+
+  <section id="screen-quest" class="screen">
+    <div class="game-head">
+      <button type="button" class="back-btn" aria-label="Назад"><svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="#0d2f7a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2 class="gh-title">Квесты и миссии</h2><span class="gh-chip" id="quest-chip">0/5</span>
+    </div>
+    <div id="quest-body"></div>
+  </section>
+
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<noscript><p style="position:fixed;inset:auto 0 0 0;background:#fff;padding:12px;text-align:center;font-weight:800;z-index:999">Для игр нужен включённый JavaScript.</p></noscript>
+
+<script>
+'use strict';
+/* ================= УТИЛИТЫ ================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const shuffle=a=>{const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtTime=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
+
+/* ================= СОХРАНЕНИЕ ================= */
+const KEY='cyberdetective_v1';
+let state={sound:true,name:'',surname:'',email:'',stars:{quiz:0,comic:0,drill:0,memory:0,quest:0},best:{quiz:0,drill:0,moves6:0,moves8:0},questDone:[false,false,false,false,false]};
+try{const raw=localStorage.getItem(KEY);if(raw){const p=JSON.parse(raw);state={...state,...p,stars:{...state.stars,...(p.stars||{})},best:{...state.best,...(p.best||{})},questDone:Array.isArray(p.questDone)&&p.questDone.length===5?p.questDone:state.questDone};}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+
+/* ================= ЗВУК (WebAudio-синтез) ================= */
+const SFX={ctx:null,master:null,on:state.sound,
+  unlock(){try{if(!this.ctx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;this.ctx=new AC();this.master=this.ctx.createGain();this.master.gain.value=.85;this.master.connect(this.ctx.destination);}if(this.ctx.state==='suspended')this.ctx.resume();}catch(e){}},
+  tone(f,delay,dur,type,vol,slide){if(!this.on||!this.ctx)return;try{const t=this.ctx.currentTime+delay;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(40,f+slide),t+dur);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol||.3,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(this.master);o.start(t);o.stop(t+dur+.05);}catch(e){}},
+  tap(){this.tone(560,0,.09,'triangle',.28,-180);},
+  flip(){this.tone(360,0,.07,'sine',.25,140);},
+  ok(){this.tone(523,0,.12,'triangle',.3);this.tone(659,.07,.12,'triangle',.3);this.tone(784,.14,.16,'triangle',.3);},
+  bad(){this.tone(200,0,.2,'sawtooth',.15,-60);this.tone(150,.03,.22,'square',.09,-30);},
+  match(){this.tone(660,0,.1,'sine',.3);this.tone(880,.08,.12,'sine',.3);this.tone(1320,.16,.14,'sine',.18);},
+  win(){[523,659,784,1047].forEach((f,i)=>this.tone(f,i*.09,i===3?.34:.14,'triangle',.3));this.tone(1568,.4,.3,'sine',.16);},
+  badge(){this.tone(600,0,.22,'sine',.26,600);this.tone(900,.1,.14,'triangle',.24);this.tone(1200,.2,.2,'triangle',.24);},
+  star(i){this.tone(700+i*180,0,.15,'triangle',.3);},
+  tick(){this.tone(880,0,.05,'square',.12);}
+};
+document.addEventListener('pointerdown',()=>SFX.unlock(),{passive:true});
+
+/* ================= КОНФЕТТИ ================= */
+const FX={cv:$('#fx'),ctx:null,p:[],raf:0,
+  resize(){const d=Math.min(2,window.devicePixelRatio||1);this.cv.width=innerWidth*d;this.cv.height=innerHeight*d;this.cv.style.width=innerWidth+'px';this.cv.style.height=innerHeight+'px';this.ctx=this.cv.getContext('2d');this.ctx.setTransform(d,0,0,d,0,0);},
+  burst(n=110,ox=.5,oy=.32){if(!this.ctx)this.resize();const C=['#ffc93c','#ff9800','#2f9bff','#7fd4ff','#ffffff','#22b573','#ff4fa0'];for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=4+Math.random()*7;this.p.push({x:innerWidth*ox+(Math.random()-.5)*90,y:innerHeight*oy,vx:Math.cos(a)*s,vy:Math.sin(a)*s-4,g:.15+Math.random()*.09,r:Math.random()*Math.PI,vr:(Math.random()-.5)*.3,s:5+Math.random()*6,c:C[i%C.length],sh:i%3,l:90+Math.random()*50});}if(!this.raf)this.loop();},
+  loop(){this.raf=requestAnimationFrame(()=>this.loop());const c=this.ctx;if(!c)return;c.clearRect(0,0,innerWidth,innerHeight);this.p=this.p.filter(p=>p.l>0&&p.y<innerHeight+50);if(!this.p.length){cancelAnimationFrame(this.raf);this.raf=0;c.clearRect(0,0,innerWidth,innerHeight);return;}for(const p of this.p){p.vy+=p.g;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.l--;c.save();c.translate(p.x,p.y);c.rotate(p.r);c.globalAlpha=Math.min(1,p.l/40);c.fillStyle=p.c;if(p.sh===0)c.fillRect(-p.s/2,-p.s/2,p.s,p.s*.62);else if(p.sh===1){c.beginPath();c.arc(0,0,p.s/2,0,7);c.fill();}else{c.beginPath();c.moveTo(0,-p.s/2);c.lineTo(p.s/2,p.s/2);c.lineTo(-p.s/2,p.s/2);c.closePath();c.fill();}c.restore();}}
+};
+addEventListener('resize',()=>FX.resize());FX.resize();
+
+/* ================= ТОСТ ================= */
+let toastT=0;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2100);}
+
+/* ================= ЗВЁЗДЫ И НАГРАДЫ ================= */
+const starSVG=(f,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z" fill="${f?'#ffc93c':'#e3ecfb'}" stroke="${f?'#e07f00':'#b9cdf0'}" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+function renderMenuStars(){$$('[data-stars]').forEach(el=>{const n=state.stars[el.dataset.stars]||0;el.innerHTML=[0,1,2].map(i=>starSVG(i<n,13)).join('');});const total=Object.values(state.stars).reduce((a,b)=>a+b,0);$('#stars-chip').innerHTML=`⭐ ${total}<span class="chip-max">/15</span>`;}
+function award(game,stars){if(stars>(state.stars[game]||0)){state.stars[game]=stars;save();}renderMenuStars();}
+
+/* ================= РОБОТ-ЭМОЦИЯ (мини) ================= */
+function robotMood(mood){
+  let eyes='',mouth='',extra='';
+  if(mood==='wow'){eyes=`<circle cx="44" cy="56" r="12" fill="#fff"/><circle cx="44" cy="58" r="6" fill="#071a3d"/><circle cx="41" cy="53" r="2.6" fill="#fff"/><circle cx="76" cy="56" r="12" fill="#fff"/><circle cx="76" cy="58" r="6" fill="#071a3d"/><circle cx="73" cy="53" r="2.6" fill="#fff"/>`;mouth=`<ellipse cx="60" cy="78" rx="7" ry="9" fill="#3d0f26"/>`;}
+  else if(mood==='sad'){eyes=`<circle cx="44" cy="58" r="9" fill="#fff"/><circle cx="44" cy="61" r="4.5" fill="#071a3d"/><circle cx="76" cy="58" r="9" fill="#fff"/><circle cx="76" cy="61" r="4.5" fill="#071a3d"/>`;extra=`<path d="M34 44 L52 49 M86 44 L68 49" stroke="#7fd4ff" stroke-width="3" stroke-linecap="round"/>`;mouth=`<path d="M50 82 Q60 74 70 82" stroke="#7fd4ff" stroke-width="4" stroke-linecap="round" fill="none"/>`;}
+  else{eyes=`<circle cx="44" cy="56" r="10" fill="#fff"/><circle cx="44" cy="58" r="5" fill="#071a3d"/><circle cx="41.5" cy="53.5" r="2.2" fill="#fff"/><circle cx="76" cy="56" r="10" fill="#fff"/><circle cx="76" cy="58" r="5" fill="#071a3d"/><circle cx="73.5" cy="53.5" r="2.2" fill="#fff"/>`;mouth=`<path d="M48 72 Q60 83 72 72 Q70 88 60 88 Q50 88 48 72 Z" fill="#3d0f26"/><ellipse cx="60" cy="82" rx="6.5" ry="3.6" fill="#ff6b8a"/>`;}
+  return `<svg viewBox="0 0 120 104" aria-hidden="true"><rect x="56" y="10" width="8" height="18" rx="4" fill="#9fb9e8" stroke="#0d2f7a" stroke-width="3"/><circle cx="60" cy="9" r="8" fill="#7fd4ff" stroke="#0d2f7a" stroke-width="3"/><circle cx="18" cy="58" r="10" fill="#ffb300" stroke="#0d2f7a" stroke-width="4"/><circle cx="102" cy="58" r="10" fill="#ffb300" stroke="#0d2f7a" stroke-width="4"/><rect x="18" y="26" width="84" height="66" rx="30" fill="#fff" stroke="#0d2f7a" stroke-width="5"/><rect x="28" y="36" width="64" height="46" rx="22" fill="#10306e" stroke="#0a2456" stroke-width="3"/><ellipse cx="60" cy="43" rx="24" ry="6" fill="#fff" opacity=".12"/>${extra}${eyes}${mouth}</svg>`;
+}
+
+/* ================= ОБЩИЙ ЭКРАН РЕЗУЛЬТАТА ================= */
+let resultSeq=0;
+function buildResult(container,o){
+  const seq=++resultSeq;
+  container.innerHTML=`<div class="panel result-box">
+    <div class="res-mood">${robotMood(o.mood||'happy')}</div>
+    <h3 class="res-title">${o.title}</h3>
+    <div class="res-score">${o.score}</div>
+    <div class="res-stars">${[0,1,2].map(i=>`<span class="star-big ${i<o.stars?'earned':''}" style="animation-delay:${.25+i*.28}s">${starSVG(i<o.stars,46)}</span>`).join('')}</div>
+    <p class="res-sub">${o.sub}</p>
+    <div class="res-actions"><button type="button" class="btn btn-amber res-replay">↻ Ещё раз</button><button type="button" class="btn btn-white res-home">🏠 В меню</button></div>
+  </div>`;
+  container.querySelector('.res-replay').onclick=()=>{SFX.tap();o.replay();};
+  container.querySelector('.res-home').onclick=()=>{SFX.tap();showScreen('menu');};
+  for(let i=0;i<o.stars;i++)setTimeout(()=>{if(seq===resultSeq)SFX.star(i);},320+i*280);
+  if(o.stars>=2)setTimeout(()=>{if(seq===resultSeq){FX.burst(130);SFX.win();}},480);
+  else if(o.stars===1)setTimeout(()=>{if(seq===resultSeq)SFX.ok();},380);
+}
+
+/* ================= ВИКТОРИНА ================= */
+const QUIZ=[
+ {i:'🔑',q:'Какой пароль самый надёжный?',o:['123456','qwerty','Kot#7Luna!2','Моё имя'],c:2,f:'Надёжный пароль — длинный, с большими и маленькими буквами, цифрами и символами.'},
+ {i:'📍',q:'Незнакомец в сети просит твой адрес. Что сделаешь?',o:['Напишу, если он вежливый','Скажу только город','Не скажу и расскажу взрослым'],c:2,f:'Адрес, телефон и школа — личная информация. Незнакомцам её не говорят.'},
+ {i:'🎁',q:'Сообщение: «Ты выиграл телефон! Нажми ссылку!»',o:['Нажму — вдруг правда!','Перешлю друзьям','Не нажму и покажу взрослым'],c:2,f:'«Выигрыши» от незнакомцев — это фишинг: так крадут данные и деньги.'},
+ {i:'🤐',q:'Кому можно сказать свой пароль?',o:['Лучшему другу','Никому, кроме родителей','Одноклассникам'],c:1,f:'Пароль — как ключ от дома. Даже друзьям его не дают.'},
+ {i:'😢',q:'Тебя обижают в чате. Как поступить?',o:['Ответить обидчику тем же','Не отвечать, сохранить скриншот и сказать взрослым','Удалить всё и молчать'],c:1,f:'Кибербуллинг — не твоя вина. Скриншоты помогут взрослым разобраться.'},
+ {i:'🕵️',q:'Что из этого — личная информация?',o:['Любимый цвет','Адрес и телефон','Любимая игра'],c:1,f:'Личные данные — то, по чему можно найти тебя или твою семью.'},
+ {i:'🤝',q:'Друг из игры зовёт встретиться без взрослых.',o:['Пойду — он давно пишет','Откажусь и расскажу родителям','Пойду, но возьму друга'],c:1,f:'В сети человек может быть не тем, за кого себя выдаёт. Встречи — только вместе с родителями.'},
+ {i:'⬇️',q:'Как безопасно скачать игру?',o:['По ссылке из сообщения','Из официального магазина вместе с родителями','С любого сайта, где бесплатно'],c:1,f:'В официальных магазинах приложения проверяют, а «бесплатные» файлы могут содержать вирусы.'}
+];
+const quiz={body:$('#quiz-body'),chip:$('#quiz-chip'),order:[],idx:0,score:0,seq:0,
+  enter(){this.start();},stop(){this.seq++;},
+  start(){this.seq++;resultSeq++;this.order=shuffle(QUIZ);this.idx=0;this.score=0;this.renderQ();},
+  renderQ(){const q=this.order[this.idx];const opts=shuffle(q.o.map((t,i)=>({t,ok:i===q.c})));const L=['А','Б','В','Г'];
+    this.chip.textContent=`${this.idx+1}/8`;
+    this.body.innerHTML=`<div class="q-top"><span>Вопрос ${this.idx+1} из 8</span><span>⭐ ${this.score}</span></div>
+    <div class="q-bar"><div class="q-fill" style="width:${this.idx/8*100}%"></div></div>
+    <div class="panel"><div class="q-icon">${q.i}</div><h3 class="q-text">${q.q}</h3>
+    <div class="q-opts">${opts.map((o,i)=>`<button type="button" class="q-opt" data-ok="${o.ok?1:0}"><span class="letter">${L[i]}</span><span>${o.t}</span></button>`).join('')}</div>
+    <div class="q-fact" hidden><span>💡</span><p>${q.f}</p><button type="button" class="btn btn-amber btn-block q-next">${this.idx===7?'К результатам 🏁':'Дальше →'}</button></div></div>`;
+    const btns=[...this.body.querySelectorAll('.q-opt')];
+    btns.forEach(b=>b.onclick=()=>{if(btns[0].disabled)return;btns.forEach(x=>x.disabled=true);
+      const ok=b.dataset.ok==='1';
+      btns.forEach(x=>{if(x.dataset.ok==='1')x.classList.add('correct');else if(x===b)x.classList.add('wrong');else x.classList.add('dim');});
+      if(ok){this.score++;SFX.ok();}else SFX.bad();
+      this.body.querySelector('.q-fill').style.width=((this.idx+1)/8*100)+'%';
+      this.body.querySelector('.q-top span:last-child').textContent='⭐ '+this.score;
+      const fact=this.body.querySelector('.q-fact');fact.hidden=false;
+      fact.querySelector('.q-next').onclick=()=>{SFX.tap();this.idx++;this.idx<8?this.renderQ():this.finish();};
+    });
+  },
+  finish(){const s=this.score>=7?3:this.score>=5?2:this.score>=3?1:0;award('quiz',s);
+    if(this.score>(state.best.quiz||0)){state.best.quiz=this.score;save();}
+    const titles=['Не сдавайся, детектив!','Хорошее начало!','Отличные знания!','Гениальный детектив!'];
+    buildResult(this.body,{mood:s>=2?'happy':'sad',title:titles[s],score:`${this.score} из 8 правильных ответов`,
+      sub:s===3?'Ты знаешь правила безопасности назубок. Так держать!':s>=1?'Повтори правила вместе с родителями — и в следующий раз будет ещё лучше!':'Каждая ошибка — это урок. Попробуй ещё разок!',
+      stars:s,replay:()=>this.start()});
+  }
+};
+
+/* ================= КОМИКС-ДЕТЕКТИВ ================= */
+const COMIC=[
+ {type:'intro'},
+ {type:'chat',avatar:'❓',sender:'Незнакомец_2024',msgs:['Привет! 🎁 Ты выиграла ЗОЛОТОЙ ПРИЗ!','Жми скорее: <span class="msg-link">gold-priz.xyz</span>'],
+  caption:'Мия получила сообщение от незнакомца. Что ей сделать?',
+  options:['Нажать на ссылку — вдруг правда!','Не нажимать и позвать взрослых'],good:1,
+  goodNote:'Верно! «Золотые призы» от незнакомцев — это ловушка-фишинг. Улика найдена!',
+  badNote:'Ой! Ссылка открыла фальшивый сайт, который крадёт пароли. Хорошо, что робот Байт успел закрыть окно!'},
+ {type:'chat',avatar:'🎭',sender:'Добряк_777',msgs:['Давай дружить! 😊 Скинь своё фото и адрес.','Только никому не говори про наш чат 🤫'],
+  caption:'Новый «друг» просит секреты. Как поступить Мии?',
+  options:['Отправить — он ведь дружелюбный','Заблокировать и рассказать родителям'],good:1,
+  goodNote:'Правильно! Просьбы о секретности от незнакомцев — тревожный сигнал. Улика найдена!',
+  badNote:'Так нельзя! Под маской добряка может скрываться обманщик. Мия вовремя остановилась — Байт объяснил ей правило.'},
+ {type:'board',caption:'Байт изучает улики. Что главное выдаёт мошенника?',
+  options:['Он просит личные данные и секретность','Он написал «привет»','Он поставил смайлик'],good:0,
+  goodNote:'Точно! Мошенники выманивают данные и просят молчать. Дело почти раскрыто!',
+  badNote:'Хм, приветствие и смайлик — это нормально. Настоящая улика — просьбы о данных и секретности. Запомним!'},
+ {type:'finale'}
+];
+const comic={body:$('#comic-body'),chip:$('#comic-chip'),idx:0,clues:0,
+  enter(){this.start();},stop(){},
+  start(){resultSeq++;this.idx=0;this.clues=0;this.render();},
+  render(){this.chip.textContent=`🔍 ${this.clues}/3`;const p=COMIC[this.idx];
+    if(p.type==='finale'){this.finale();return;}
+    let scene='';
+    if(p.type==='intro')scene=`<div class="scene intro-scene">${robotMood('happy')}<div class="intro-txt"><b>ДЕЛО №7</b><span>Тайна золотой ссылки</span></div></div><p class="caption">Мия получила странное сообщение. Помоги роботу Байту раскрыть дело!</p><button type="button" class="btn btn-amber btn-block comic-next">Начать расследование 🔍</button>`;
+    else if(p.type==='chat')scene=`<div class="scene"><div class="chat"><div class="chat-head"><span class="avatar">${p.avatar}</span><div><b>${p.sender}</b><i>в сети</i></div><span class="chat-robot">${robotMood('wow')}</span></div>${p.msgs.map(m=>`<div class="msg">${m}</div>`).join('')}</div></div><p class="caption">${p.caption}</p><div class="choices">${p.options.map((o,i)=>`<button type="button" class="choice-btn" data-i="${i}">${o}</button>`).join('')}</div>`;
+    else scene=`<div class="scene"><div class="board"><div class="note n1">Просит секретность 🤫</div><div class="note n2">Обещает приз 🎁</div><div class="note n3">Пишет «привет» 👋</div></div></div><p class="caption">${p.caption}</p><div class="choices">${p.options.map((o,i)=>`<button type="button" class="choice-btn" data-i="${i}">${o}</button>`).join('')}</div>`;
+    this.body.innerHTML=`<div class="comic-panel"><span class="comic-tag">ДЕЛО №7</span>${scene}</div><div class="page-dots">${COMIC.map((_,i)=>`<span class="dot ${i===this.idx?'on':''}"></span>`).join('')}</div>`;
+    const next=this.body.querySelector('.comic-next');
+    if(next)next.onclick=()=>{SFX.tap();this.idx++;this.render();};
+    this.body.querySelectorAll('.choice-btn').forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.i,good=i===p.good;
+      this.body.querySelectorAll('.choice-btn').forEach(x=>x.disabled=true);
+      b.classList.add(good?'good':'badpick');
+      if(good){this.clues++;this.chip.textContent=`🔍 ${this.clues}/3`;SFX.ok();toast('🔍 Улика найдена!');}
+      else{SFX.bad();this.body.querySelector('.comic-panel').classList.add('shake');}
+      const ch=this.body.querySelector('.choices');
+      ch.innerHTML=`${b.outerHTML}<div class="consequence ${good?'good':'bad'}">${good?p.goodNote:p.badNote}</div><button type="button" class="btn btn-amber btn-block comic-next">Дальше →</button>`;
+      ch.querySelector('.comic-next').onclick=()=>{SFX.tap();this.idx++;this.render();};
+    });
+  },
+  finale(){const s=this.clues===3?3:this.clues===2?2:1;award('comic',s);
+    const rank=s===3?'Звание: СУПЕРДЕТЕКТИВ! Ты заметил все улики.':s===2?'Звание: ОПЫТНЫЙ СЫЩИК. Ещё чуть-чуть — и ты заметишь всё!':'Дело раскрыто с подсказками Байта. Перечитай историю и найди все улики!';
+    buildResult(this.body,{mood:s>=2?'happy':'sad',title:'Дело раскрыто! 🎉',score:`Улик собрано: ${this.clues} из 3`,sub:rank+' Мошенник заблокирован, Мия в безопасности.',stars:s,replay:()=>this.start()});
+  }
+};
+
+/* ================= ТРЕНИРОВКА: ОПАСНО / БЕЗОПАСНО ================= */
+const DRILL_ITEMS=[
+ {e:'🍲',s:'Мама',t:'«Ужин готов, приходи!»',safe:true},
+ {e:'🎁',s:'Незнакомец',t:'«Ты выиграл приз! Введи данные карты родителей»',safe:false},
+ {e:'🏫',s:'Сайт школы',t:'Домашнее задание на завтра',safe:true},
+ {e:'🔗',s:'Почта',t:'«Скачай бесплатно: super-igry-besplatno.xyz»',safe:false},
+ {e:'👵',s:'Семья',t:'Видеозвонок от бабушки',safe:true},
+ {e:'🤫',s:'Незнакомец',t:'«Никому не говори, что мы общаемся»',safe:false},
+ {e:'🛡️',s:'Антивирус',t:'«Защита обновлена, всё в порядке»',safe:true},
+ {e:'📸',s:'Незнакомец',t:'«Пришли фото, где ты один дома»',safe:false},
+ {e:'🎬',s:'Детский портал',t:'Новые мультики на проверенном сайте',safe:true},
+ {e:'🗝️',s:'«Администратор»',t:'«Сообщи пароль для проверки аккаунта»',safe:false},
+ {e:'📍',s:'Незнакомец',t:'«Напиши свой адрес и номер школы»',safe:false},
+ {e:'🎮',s:'Магазин приложений',t:'Игра с рейтингом 6+ из официального магазина',safe:true}
+];
+const drill={body:$('#drill-body'),chip:$('#drill-chip'),items:[],i:0,score:0,hearts:3,streak:0,answered:0,busy:true,running:false,t:0,seq:0,deadline:0,lastSec:9,
+  enter(){this.showStart();},
+  stop(){clearInterval(this.t);this.seq++;this.running=false;},
+  showStart(){this.running=false;this.chip.textContent='Очки: 0';
+    this.body.innerHTML=`<div class="panel drill-start"><div class="ds-icons">🛡️⚡⛔</div><h3>Опасно или безопасно?</h3><p>Читай сообщение и решай: оно <b class="tx-green">безопасное</b> или <b class="tx-red">опасное</b>. На каждое — 8 секунд. У тебя 3 жизни и 12 сообщений!</p>${state.best.drill?`<p class="sub-note">🏆 Твой рекорд: ${state.best.drill} очков</p>`:''}<button type="button" class="btn btn-amber btn-block drill-go">Поехали! 🚀</button></div>`;
+    this.body.querySelector('.drill-go').onclick=()=>{SFX.tap();this.startRound();};
+  },
+  startRound(){this.seq++;resultSeq++;this.items=shuffle(DRILL_ITEMS);this.i=0;this.score=0;this.hearts=3;this.streak=0;this.answered=0;this.running=true;
+    this.body.innerHTML=`<div class="drill-top"><span class="hearts"></span><span class="streak-chip" hidden></span><span class="d-count"></span></div>
+    <div class="panel drill-card"><div class="dc-emoji"></div><div class="dc-sender"></div><div class="dc-text"></div></div>
+    <div class="timer"><div class="timer-fill"></div></div>
+    <div class="drill-btns"><button type="button" class="big-btn safe-btn">✅<span>Безопасно</span></button><button type="button" class="big-btn danger-btn">⛔<span>Опасно</span></button></div>
+    <p class="key-hint">Клавиши ← безопасно · опасно →</p>`;
+    this.body.querySelector('.safe-btn').onclick=()=>this.answer(true);
+    this.body.querySelector('.danger-btn').onclick=()=>this.answer(false);
+    this.showItem();
+  },
+  showItem(){const it=this.items[this.i];const card=this.body.querySelector('.drill-card');
+    card.className='panel drill-card pop-in';
+    card.querySelector('.dc-emoji').textContent=it.e;
+    card.querySelector('.dc-sender').textContent=it.s;
+    card.querySelector('.dc-text').textContent=it.t;
+    this.body.querySelector('.hearts').textContent='❤️'.repeat(this.hearts)+'🤍'.repeat(3-this.hearts);
+    this.body.querySelector('.d-count').textContent=`Сообщение ${this.i+1}/12`;
+    const st=this.body.querySelector('.streak-chip');
+    if(this.streak>=3){st.hidden=false;st.textContent=`🔥 серия ×${this.streak}`;}else st.hidden=true;
+    this.chip.textContent='Очки: '+this.score;
+    this.busy=false;this.deadline=performance.now()+8000;this.lastSec=9;
+    clearInterval(this.t);
+    const fill=this.body.querySelector('.timer-fill');
+    this.t=setInterval(()=>{const rem=this.deadline-performance.now();
+      if(rem<=0){this.answer(null);return;}
+      fill.style.width=(rem/8000*100)+'%';
+      fill.className='timer-fill'+(rem<2400?' low':rem<4600?' mid':'');
+      const sec=Math.ceil(rem/1000);
+      if(sec<=3&&sec<this.lastSec){this.lastSec=sec;SFX.tick();}
+    },60);
+  },
+  answer(val){if(this.busy||!this.running)return;this.busy=true;clearInterval(this.t);
+    const it=this.items[this.i],card=this.body.querySelector('.drill-card');
+    const correct=val===it.safe;this.answered++;
+    if(correct){this.score++;this.streak++;SFX.ok();card.classList.add(it.safe?'fly-left':'fly-right');}
+    else{this.hearts--;this.streak=0;SFX.bad();card.classList.add('shake');
+      const hint=this.body.querySelector(it.safe?'.safe-btn':'.danger-btn');hint.classList.add('hint');
+      if(val===null)toast('⏰ Время вышло! Это было '+(it.safe?'безопасно ✅':'опасно ⛔'));
+      this.body.querySelector('.hearts').textContent='❤️'.repeat(Math.max(0,this.hearts))+'🤍'.repeat(3-Math.max(0,this.hearts));
+    }
+    this.chip.textContent='Очки: '+this.score;
+    const seq=this.seq;
+    setTimeout(()=>{if(seq!==this.seq)return;
+      this.body.querySelectorAll('.big-btn').forEach(b=>b.classList.remove('hint'));
+      this.i++;
+      if(this.hearts<=0||this.i>=this.items.length)this.end();else this.showItem();
+    },560);
+  },
+  end(){this.running=false;clearInterval(this.t);
+    const s=this.score>=11?3:this.score>=8?2:this.score>=5?1:0;award('drill',s);
+    if(this.score>(state.best.drill||0)){state.best.drill=this.score;save();}
+    const acc=this.answered?Math.round(this.score/this.answered*100):0;
+    const titles=['Попробуй ещё раз!','Неплохо, продолжай!','Отличная тренировка!','Щит мастерства! 🛡️'];
+    buildResult(this.body,{mood:s>=2?'happy':'sad',title:titles[s],score:`Верно: ${this.score} · Точность: ${acc}%`,
+      sub:(this.hearts<=0?'Жизни закончились. ':'')+`Рекорд: ${state.best.drill} очков. Помни: секретность, призы и личные данные от незнакомцев — всегда опасность!`,
+      stars:s,replay:()=>this.startRound()});
+  }
+};
+
+/* ================= ЛОГИКА: ПАРЫ + РЯДЫ ================= */
+const MEM_EMO=['🔒','🛡️','🔑','🕵️','💻','📧','⭐','🎮'];
+const SEQ_ROUNDS=[
+ {row:['🔵','🟡','🔵','🟡','🔵'],ans:'🟡',opts:['🔵','🟡','🟢','🟣'],hint:'Цвета чередуются: синий, жёлтый…'},
+ {row:['2','4','6','8'],ans:'10',opts:['9','10','12','8'],hint:'Каждый раз прибавляем 2'},
+ {row:['🔒','🔑','🔒','🔑','🔒'],ans:'🔑',opts:['🔒','🛡️','🔑','⭐'],hint:'Замок и ключ чередуются'},
+ {row:['1','2','4','7','11'],ans:'16',opts:['14','15','16','13'],hint:'Прибавляем +1, +2, +3, +4, +5…'},
+ {row:['⭐','⭐','🌙','⭐','⭐'],ans:'🌙',opts:['⭐','🌙','☀️','🌟'],hint:'После двух звёзд приходит луна'},
+ {row:['3','6','9','12'],ans:'15',opts:['14','16','15','18'],hint:'Считаем тройками: 3, 6, 9…'}
+];
+const memory={body:$('#memory-body'),chip:$('#memory-chip'),mode:'memory',pairs:8,moves:0,found:0,open:[],lock:false,t:0,to:0,t0:0,seq:0,
+  sr:0,sc:0,slock:false,sto:0,
+  enter(){this.mode==='seq'?this.startSeq():this.startMem();},
+  stop(){clearInterval(this.t);clearTimeout(this.to);clearTimeout(this.sto);this.seq++;},
+  chipsHtml(extra=''){return `<div class="mode-chips"><button type="button" class="chip-btn ${this.mode==='memory'?'on':''}" data-m="memory">🃏 Найди пару</button><button type="button" class="chip-btn ${this.mode==='seq'?'on':''}" data-m="seq">🔢 Продолжи ряд</button>${extra}</div>`;},
+  bindChips(){this.body.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{if(b.dataset.m===this.mode)return;SFX.tap();this.mode=b.dataset.m;this.mode==='seq'?this.startSeq():this.startMem();});
+    this.body.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const p=+b.dataset.p;if(p===this.pairs)return;SFX.tap();this.pairs=p;this.startMem();});},
+  startMem(){this.stop();resultSeq++;const seq=this.seq;this.moves=0;this.found=0;this.open=[];this.lock=false;
+    const deck=shuffle(MEM_EMO.slice(0,this.pairs).flatMap(e=>[e,e]));
+    const best=state.best['moves'+this.pairs];
+    this.body.innerHTML=this.chipsHtml(`<button type="button" class="chip-btn small ${this.pairs===6?'on':''}" data-p="6">6 пар</button><button type="button" class="chip-btn small ${this.pairs===8?'on':''}" data-p="8">8 пар</button>`)+
+    `<div class="mem-stats"><span class="ms-moves">Ходы: 0</span><span class="ms-pairs">Пары: 0/${this.pairs}</span>${best?`<span>🏆 Рекорд: ${best} ходов</span>`:''}</div>
+    <div class="mem-grid">${deck.map((e,i)=>`<button type="button" class="mem-card" data-i="${i}" data-e="${e}" aria-label="Карточка"><span class="mem-inner"><span class="mem-face mem-back">?</span><span class="mem-face mem-front">${e}</span></span></button>`).join('')}</div>`;
+    this.bindChips();
+    this.t0=Date.now();this.chip.textContent='00:00';
+    clearInterval(this.t);this.t=setInterval(()=>{this.chip.textContent=fmtTime(Date.now()-this.t0);},1000);
+    this.body.querySelector('.mem-grid').addEventListener('click',ev=>{
+      const btn=ev.target.closest('.mem-card');if(!btn||seq!==this.seq)return;this.flip(btn,seq);
+    });
+  },
+  flip(btn,seq){if(this.lock||btn.classList.contains('flipped'))return;
+    SFX.flip();btn.classList.add('flipped');this.open.push(btn);
+    if(this.open.length<2)return;
+    this.moves++;this.body.querySelector('.ms-moves').textContent='Ходы: '+this.moves;
+    const [a,b]=this.open;this.open=[];
+    if(a.dataset.e===b.dataset.e){
+      setTimeout(()=>{if(seq!==this.seq)return;a.classList.add('matched');b.classList.add('matched');SFX.match();
+        this.found++;this.body.querySelector('.ms-pairs').textContent=`Пары: ${this.found}/${this.pairs}`;
+        if(this.found===this.pairs)this.winMem(seq);
+      },260);
+    }else{this.lock=true;this.to=setTimeout(()=>{if(seq!==this.seq)return;a.classList.remove('flipped');b.classList.remove('flipped');this.lock=false;},720);}
+  },
+  winMem(seq){clearInterval(this.t);const time=fmtTime(Date.now()-this.t0);
+    const s=this.moves<=this.pairs+4?3:this.moves<=this.pairs+10?2:1;award('memory',s);
+    const k='moves'+this.pairs;
+    if(!state.best[k]||this.moves<state.best[k]){state.best[k]=this.moves;save();}
+    setTimeout(()=>{if(seq!==this.seq)return;
+      buildResult(this.body,{mood:'happy',title:'Все пары найдены! 🧠',score:`${this.moves} ходов · время ${time}`,
+        sub:s===3?'Феноменальная память! Ты настоящий логик-детектив.':'Отличная работа! Тренируйся — и ходов будет ещё меньше.',
+        stars:s,replay:()=>this.startMem()});
+    },620);
+  },
+  startSeq(){this.stop();resultSeq++;this.sr=0;this.sc=0;this.srounds=shuffle(SEQ_ROUNDS);this.renderSeq();},
+  renderSeq(){const seq=this.seq,r=this.srounds[this.sr];this.slock=false;
+    this.chip.textContent=`Раунд ${this.sr+1}/6`;
+    const opts=shuffle(r.opts);
+    this.body.innerHTML=this.chipsHtml()+`<div class="panel"><h3 class="seq-title">Что стоит на месте вопроса?</h3>
+    <div class="seq-row">${r.row.map(t=>`<span class="seq-tile">${t}</span>`).join('')}<span class="seq-tile seq-missing">?</span></div>
+    <div class="seq-opts">${opts.map(o=>`<button type="button" class="seq-opt" data-o="${esc(o)}">${o}</button>`).join('')}</div>
+    <p class="seq-hint"></p><div class="page-dots" style="margin-top:8px">${this.srounds.map((_,i)=>`<span class="dot ${i===this.sr?'on':''}" style="${i<this.sr?'background:#ffd76a':''}"></span>`).join('')}</div></div>`;
+    this.bindChips();
+    this.body.querySelectorAll('.seq-opt').forEach(b=>b.onclick=()=>{
+      if(this.slock||seq!==this.seq)return;this.slock=true;
+      const ok=b.dataset.o===r.ans;
+      this.body.querySelectorAll('.seq-opt').forEach(x=>{x.disabled=true;if(x.dataset.o===r.ans)x.classList.add('right');});
+      const miss=this.body.querySelector('.seq-missing');
+      if(ok){this.sc++;SFX.ok();miss.textContent=r.ans;miss.classList.add('good');miss.classList.remove('seq-missing');}
+      else{SFX.bad();b.classList.add('wrong');miss.textContent=r.ans;this.body.querySelector('.seq-hint').textContent='💡 '+r.hint;}
+      this.sto=setTimeout(()=>{if(seq!==this.seq)return;this.sr++;this.sr<6?this.renderSeq():this.endSeq();},ok?750:1500);
+    });
+  },
+  endSeq(){const s=this.sc>=6?3:this.sc>=4?2:this.sc>=2?1:0;award('memory',s);
+    buildResult(this.body,{mood:s>=2?'happy':'sad',title:s===3?'Логика на максимум!':'Задачки решены!',score:`Верно: ${this.sc} из 6`,
+      sub:s===3?'Ты видишь закономерности как настоящий детектив!':'Ищи правило ряда: что повторяется или как меняются числа.',
+      stars:s,replay:()=>this.startSeq()});
+  }
+};
+
+/* ================= КВЕСТЫ И МИССИИ ================= */
+const MISSIONS=[
+ {e:'🔐',t:'Секретный пароль',d:'Собери надёжный пароль из плиток',praise:'Теперь ты знаешь рецепт крепкого пароля!'},
+ {e:'🎣',t:'Ловушка для фишера',d:'Найди опасные сайты среди безопасных',praise:'Фишер попался! Ты отлично видишь подделку.'},
+ {e:'🛡️',t:'Крепость профиля',d:'Настрой приватность правильно',praise:'Твой профиль теперь как настоящая крепость!'},
+ {e:'🧩',t:'Шифровка',d:'Собери секретное слово из букв',praise:'Шифр разгадан! Секретное слово под защитой.'},
+ {e:'🎓',t:'Экзамен детектива',d:'Прими верное решение в сложной ситуации',praise:'Экзамен сдан! Академия гордится тобой.'}
+];
+const quest={body:$('#quest-body'),chip:$('#quest-chip'),view:'map',seq:0,to:0,
+  enter(){this.showMap();},
+  stop(){this.seq++;clearTimeout(this.to);},
+  doneCount(){return state.questDone.filter(Boolean).length;},
+  showMap(){this.view='map';this.seq++;const n=this.doneCount();this.chip.textContent=`${n}/5 миссий`;
+    this.body.innerHTML=`<div class="panel quest-hello"><div class="qh-txt"><h3>Привет, <span class="qh-name">${esc(state.name||'детектив')}</span>! 👋</h3><p>Пройди 5 миссий Академии детектива-смартфона и получи диплом!</p></div><input class="name-input" maxlength="16" placeholder="Твоё имя" value="${esc(state.name)}" aria-label="Твоё имя"></div>
+    <div class="quest-map">${MISSIONS.map((m,i)=>{
+      const done=state.questDone[i],open=i===0||state.questDone[i-1];
+      const cls=done?'done':open?'open':'locked';
+      return `<button type="button" class="q-node ${cls}" data-i="${i}"><span class="qn-badge">${done?'✔':open?m.e:'🔒'}</span><span class="qn-card"><span><b>${i+1}. ${m.t}</b><i>${m.d}</i></span><span class="qn-status">${done?'Готово ✓':open?'Играть ▶':''}</span></span></button>`;
+    }).join('')}</div>
+    <button type="button" class="reset-btn">Сбросить прогресс миссий</button>`;
+    const inp=this.body.querySelector('.name-input');
+    inp.onchange=()=>{state.name=inp.value.trim().slice(0,16);save();this.body.querySelector('.qh-name').textContent=state.name||'детектив';if(state.name)toast('Привет, '+state.name+'! 🕵️');};
+    this.body.querySelectorAll('.q-node').forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.i;
+      if(b.classList.contains('locked')){SFX.bad();toast('🔒 Сначала выполни предыдущую миссию!');return;}
+      SFX.tap();this.openMission(i);
+    });
+    const rb=this.body.querySelector('.reset-btn');let armed=false,armT=0;
+    rb.onclick=()=>{if(!armed){armed=true;rb.classList.add('arm');rb.textContent='Точно сбросить? Нажми ещё раз';armT=setTimeout(()=>{armed=false;rb.classList.remove('arm');rb.textContent='Сбросить прогресс миссий';},3000);}
+      else{clearTimeout(armT);state.questDone=[false,false,false,false,false];state.stars.quest=0;save();renderMenuStars();SFX.tap();toast('Прогресс сброшен — удачи заново!');this.showMap();}};
+  },
+  openMission(i){this.view='mission';this.seq++;const seq=this.seq,m=MISSIONS[i];
+    this.body.innerHTML=`<div class="mis-head"><button type="button" class="btn btn-white mis-back">← К карте</button><span class="mis-badge">${m.e}</span></div>
+    <div class="panel"><h3 class="mis-title">Миссия ${i+1}: ${m.t}</h3><div class="mis-slot"></div></div>`;
+    this.body.querySelector('.mis-back').onclick=()=>{SFX.tap();this.showMap();};
+    const slot=this.body.querySelector('.mis-slot');
+    [this.m1,this.m2,this.m3,this.m4,this.m5][i].call(this,slot,seq);
+  },
+  success(i){const first=!state.questDone[i];state.questDone[i]=true;
+    const n=this.doneCount();state.stars.quest=n>=5?3:n>=3?2:n>=1?1:0;save();renderMenuStars();
+    this.chip.textContent=`${n}/5 миссий`;SFX.badge();FX.burst(first?90:45);
+    if(i===4){this.diploma();return;}
+    this.view='reward';
+    this.body.innerHTML=`<div class="panel result-box"><div class="medal">🏅</div><h3 class="res-title">Миссия выполнена!</h3><p class="res-sub">${MISSIONS[i].praise}</p><div class="res-actions"><button type="button" class="btn btn-amber mis-next">К карте миссий →</button></div></div>`;
+    this.body.querySelector('.mis-next').onclick=()=>{SFX.tap();this.showMap();};
+  },
+  diploma(){this.view='reward';const name=esc(state.name||'Юный детектив');
+    const date=new Date().toLocaleDateString('ru-RU');
+    this.body.innerHTML=`<div class="diploma"><div class="dip-kicker">АКАДЕМИЯ ДЕТЕКТИВА-СМАРТФОНА</div><div class="dip-title">ДИПЛОМ</div>
+    <div class="res-mood">${robotMood('happy')}</div>
+    <div class="dip-name">${name}</div>
+    <p class="dip-text">получает звание <b>«ДЕТЕКТИВ-СМАРТФОН»</b><br>за успешное выполнение всех 5 миссий<br>и знание правил безопасности в сети!</p>
+    <div class="dip-badges">🔐 🎣 🛡️ 🧩 🎓</div>
+    <div class="dip-date">Выдан ${date} · робот Байт 🤖</div>
+    <div class="dip-seal">✔<br>ПРОВЕРЕНО<br>БАЙТОМ</div></div>
+    <div class="res-actions"><button type="button" class="btn btn-amber dip-again">↻ Пройти заново</button><button type="button" class="btn btn-white dip-home">🏠 В меню</button></div>`;
+    setTimeout(()=>{FX.burst(160,.5,.25);SFX.win();},350);
+    this.body.querySelector('.dip-home').onclick=()=>{SFX.tap();showScreen('menu');};
+    this.body.querySelector('.dip-again').onclick=()=>{SFX.tap();state.questDone=[false,false,false,false,false];state.stars.quest=0;save();renderMenuStars();this.showMap();};
+  },
+  /* Миссия 1: конструктор пароля */
+  m1(slot,seq){const bank=['К','т','7','!','Р','9','#','а','Z','5','?','L','2','&','о','X'];let pw='';
+    const checks=[
+      {t:'Не меньше 8 символов',f:p=>p.length>=8},
+      {t:'Заглавная буква (А, Z)',f:p=>/[A-ZА-ЯЁ]/.test(p)},
+      {t:'Строчная буква (а, z)',f:p=>/[a-zа-яё]/.test(p)},
+      {t:'Цифра (0–9)',f:p=>/\d/.test(p)},
+      {t:'Спецсимвол (! # ? &)',f:p=>/[!#?&]/.test(p)}
+    ];
+    slot.innerHTML=`<p class="mis-desc">Набирай пароль плитками. Он должен пройти все 5 проверок!</p>
+    <div class="pw-field"><span class="pw-text"></span><span class="pw-caret"></span></div>
+    <div class="pw-actions"><button type="button" class="btn btn-white pw-back">⌫ Стереть</button><button type="button" class="btn btn-white pw-clear">✖ Очистить</button></div>
+    <div class="pw-tiles">${bank.map(c=>`<button type="button" class="pw-tile">${c}</button>`).join('')}</div>
+    <div class="meter">${checks.map(()=>'<span class="seg"></span>').join('')}</div>
+    <div class="pw-checks">${checks.map(c=>`<div class="check-row">○ ${c.t}</div>`).join('')}</div>
+    <button type="button" class="btn btn-green btn-block pw-done" disabled>Готово ✓</button>
+    <p class="sub-note">⚠️ Это тренажёр: придумай игровой пароль. Настоящий пароль здесь не пиши!</p>`;
+    const upd=()=>{if(seq!==this.seq)return;
+      slot.querySelector('.pw-text').textContent=pw;
+      let n=0;const rows=slot.querySelectorAll('.check-row'),segs=slot.querySelectorAll('.seg');
+      checks.forEach((c,i)=>{const ok=c.f(pw);if(ok)n++;rows[i].classList.toggle('ok',ok);rows[i].textContent=(ok?'✓ ':'○ ')+c.t;segs[i].className='seg'+(ok?' on':'')+(n===5?' full':'');});
+      slot.querySelector('.pw-done').disabled=n<5;
+    };
+    slot.querySelectorAll('.pw-tile').forEach(b=>b.onclick=()=>{if(pw.length>=16)return;pw+=b.textContent;SFX.tap();upd();});
+    slot.querySelector('.pw-back').onclick=()=>{pw=pw.slice(0,-1);SFX.flip();upd();};
+    slot.querySelector('.pw-clear').onclick=()=>{pw='';SFX.flip();upd();};
+    slot.querySelector('.pw-done').onclick=()=>this.success(0);
+    upd();
+  },
+  /* Миссия 2: фишинг */
+  m2(slot,seq){const cards=shuffle([
+    {e:'🏫',d:'mirny-school.ru',t:'Сайт нашей школы',bad:false},
+    {e:'🎁',d:'priz-dlya-vseh.xyz',t:'«Забери бесплатный приз!»',bad:true},
+    {e:'🎬',d:'detstvo-online.ru',t:'Детский портал с мультфильмами',bad:false},
+    {e:'💳',d:'bank-podarki.top',t:'«Введи карту — получи подарок»',bad:true}
+  ]);
+    slot.innerHTML=`<p class="mis-desc">Отметь 🔍 <b>все опасные сайты</b> (их два) и нажми «Проверить улики». Странные адреса и обещания подарков — повод насторожиться!</p>
+    <div class="phish-grid">${cards.map((c,i)=>`<button type="button" class="ph-card" data-i="${i}"><span class="ph-e">${c.e}</span><b>${c.d}</b><span>${c.t}</span></button>`).join('')}</div>
+    <p class="ph-feedback"></p><button type="button" class="btn btn-amber btn-block ph-check">Проверить улики 🔍</button>`;
+    const sel=new Set(),fb=slot.querySelector('.ph-feedback');
+    slot.querySelectorAll('.ph-card').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;
+      b.classList.remove('miss','oops');
+      if(sel.has(i)){sel.delete(i);b.classList.remove('sel');}else{sel.add(i);b.classList.add('sel');}
+      SFX.flip();fb.textContent='';
+    });
+    slot.querySelector('.ph-check').onclick=()=>{if(seq!==this.seq)return;
+      const need=cards.map((c,i)=>c.bad?i:-1).filter(i=>i>=0);
+      const ok=need.length===sel.size&&need.every(i=>sel.has(i));
+      if(ok){this.success(1);return;}
+      SFX.bad();let msg='';
+      cards.forEach((c,i)=>{const b=slot.querySelector(`[data-i="${i}"]`);
+        if(c.bad&&!sel.has(i)){b.classList.add('miss');msg='🔍 Не все ловушки найдены — посмотри на странные адреса!';}
+        if(!c.bad&&sel.has(i)){b.classList.add('oops');msg='⚠️ Ты отметил безопасный сайт! Проверенные сайты школ и детских порталов — не ловушки.';}
+      });
+      fb.textContent=msg||'Попробуй ещё раз!';
+    };
+  },
+  /* Миссия 3: приватность */
+  m3(slot,seq){const rows=[
+    {id:'open',t:'Открытый профиль для всех',want:false,init:true},
+    {id:'str',t:'Сообщения от незнакомцев',want:false,init:true},
+    {id:'geo',t:'Показывать адрес и школу',want:false,init:true},
+    {id:'tfa',t:'Вход по коду (двойная защита)',want:true,init:false}
+  ];
+    slot.innerHTML=`<p class="mis-desc">Сделай профиль безопасным: закрой личное от чужих и включи защиту. Следи за шкалой безопасности!</p>
+    ${rows.map(r=>`<div class="priv-row" data-r="${r.id}"><span class="pr-label">${r.t}</span><label class="switch"><input type="checkbox" data-id="${r.id}" ${r.init?'checked':''}><i></i></label></div>`).join('')}
+    <div class="priv-row" data-r="photo"><span class="pr-label">Кто видит мои фото</span><select class="priv-select" data-id="photo"><option>Все</option><option>Только друзья</option><option>Только я</option></select></div>
+    <p class="priv-meter">🔓 Безопасность: <span class="pm-val">0%</span></p>
+    <p class="ph-feedback"></p><button type="button" class="btn btn-green btn-block priv-apply">Применить настройки 🛡️</button>`;
+    const val=id=>{const el=slot.querySelector(`[data-id="${id}"]`);return el.type==='checkbox'?el.checked:el.value;};
+    const good=()=>{let n=0;rows.forEach(r=>{if(val(r.id)===r.want)n++;});if(val('photo')!=='Все')n++;return n;};
+    const upd=()=>{if(seq!==this.seq)return;const n=good();const v=slot.querySelector('.pm-val');v.textContent=Math.round(n/5*100)+'%';v.style.color=n===5?'#0e8f57':n>=3?'#d97b00':'#d92637';};
+    slot.querySelectorAll('input,select').forEach(el=>el.onchange=()=>{SFX.flip();slot.querySelectorAll('.priv-row').forEach(r=>r.classList.remove('warn'));slot.querySelector('.ph-feedback').textContent='';upd();});
+    slot.querySelector('.priv-apply').onclick=()=>{if(seq!==this.seq)return;
+      if(good()===5){this.success(2);return;}
+      SFX.bad();
+      rows.forEach(r=>{if(val(r.id)!==r.want)slot.querySelector(`[data-r="${r.id}"]`).classList.add('warn');});
+      if(val('photo')==='Все')slot.querySelector('[data-r="photo"]').classList.add('warn');
+      slot.querySelector('.ph-feedback').textContent='⚠️ Проверь подсвеченные настройки: личное — закрыто, защита — включена!';
+    };
+    upd();
+  },
+  /* Миссия 4: шифровка */
+  m4(slot,seq){const word='ПАРОЛЬ';const letters=shuffle(word.split('').map((ch,i)=>({ch,i})));
+    const slotsArr=Array(6).fill(null);
+    slot.innerHTML=`<p class="mis-desc">Шифровка! Собери секретное слово, которое защищает аккаунт и которое <b>нельзя говорить никому</b>. Нажимай на буквы по порядку.</p>
+    <div class="cipher-slots">${slotsArr.map((_,i)=>`<button type="button" class="c-slot" data-s="${i}" aria-label="Позиция ${i+1}"></button>`).join('')}</div>
+    <div class="cipher-bank">${letters.map(l=>`<button type="button" class="c-tile" data-l="${l.i}">${l.ch}</button>`).join('')}</div>
+    <p class="sub-note">Подсказка: 6 букв. Без него не откроется ни один аккаунт!</p>`;
+    const draw=()=>{slot.querySelectorAll('.c-slot').forEach((s,i)=>{const li=slotsArr[i];s.textContent=li===null?'':word[li];s.classList.toggle('filled',li!==null);});
+      slot.querySelectorAll('.c-tile').forEach(t=>t.classList.toggle('used',slotsArr.includes(+t.dataset.l)));};
+    slot.querySelectorAll('.c-tile').forEach(t=>t.onclick=()=>{const li=+t.dataset.l;if(slotsArr.includes(li))return;
+      const free=slotsArr.indexOf(null);if(free<0)return;slotsArr[free]=li;SFX.tap();draw();
+      if(!slotsArr.includes(null)){
+        const attempt=slotsArr.map(i=>word[i]).join('');
+        if(attempt===word){setTimeout(()=>{if(seq===this.seq)this.success(3);},300);}
+        else{SFX.bad();slot.querySelector('.cipher-slots').classList.add('shake');
+          this.to=setTimeout(()=>{if(seq!==this.seq)return;slot.querySelector('.cipher-slots').classList.remove('shake');for(let i=0;i<6;i++)slotsArr[i]=null;draw();toast('Не то слово — попробуй ещё!');},750);}
+      }
+    });
+    slot.querySelectorAll('.c-slot').forEach(s=>s.onclick=()=>{const i=+s.dataset.s;if(slotsArr[i]===null)return;slotsArr[i]=null;SFX.flip();draw();});
+    draw();
+  },
+  /* Миссия 5: экзамен */
+  m5(slot,seq){const opts=[
+    {t:'Пойти — скин же редкий!',ok:false,n:'Опасно! За «подарком» может скрываться обманщик. Встречи с интернет-знакомыми — только вместе с родителями.'},
+    {t:'Договориться о встрече втайне от всех',ok:false,n:'Секретность — главный признак обмана! О таких предложениях всегда рассказывай взрослым.'},
+    {t:'Отказаться, заблокировать и рассказать родителям',ok:true}
+  ];
+    slot.innerHTML=`<p class="mis-desc">📩 Незнакомец из игры пишет: <b>«Приходи один на встречу, я подарю редкий скин!»</b> Что ты сделаешь?</p>
+    <div class="q-opts">${shuffle(opts).map((o,i)=>`<button type="button" class="q-opt" data-ok="${o.ok?1:0}" data-n="${esc(o.n||'')}"><span class="letter">${['А','Б','В'][i]}</span><span>${o.t}</span></button>`).join('')}</div>
+    <div class="exam-slot"></div>`;
+    slot.querySelectorAll('.q-opt').forEach(b=>b.onclick=()=>{if(seq!==this.seq||b.disabled)return;
+      if(b.dataset.ok==='1'){b.classList.add('correct');SFX.ok();setTimeout(()=>{if(seq===this.seq)this.success(4);},450);}
+      else{b.classList.add('wrong');b.disabled=true;SFX.bad();slot.querySelector('.exam-slot').innerHTML=`<div class="exam-note">${b.dataset.n}</div>`;}
+    });
+  }
+};
+
+/* ================= НАВИГАЦИЯ ================= */
+const controllers={quiz,comic,drill,memory,quest};
+let current='start';
+function showScreen(name){
+  if(current===name)return;
+  controllers[current]?.stop?.();resultSeq++;
+  $$('.screen').forEach(s=>s.classList.remove('active'));
+  $('#screen-'+name).classList.add('active');
+  current=name;
+  document.body.dataset.screen=name;
+  controllers[name]?.enter?.();
+  if(name==='menu')renderMenuStars();
+  window.scrollTo({top:0,behavior:'auto'});
+}
+function goBack(){SFX.tap();
+  if(current==='start'||current==='menu')return;
+  if(current==='intro'){showScreen('start');return;}
+  if(current==='quest'&&(quest.view==='mission'||quest.view==='reward')){quest.showMap();return;}
+  showScreen('menu');
+}
+$$('.game-card').forEach(c=>c.onclick=()=>{SFX.tap();showScreen(c.dataset.game);});
+$$('.back-btn').forEach(b=>b.onclick=goBack);
+document.addEventListener('keydown',e=>{
+  if(e.target.matches('input,select,textarea'))return;
+  if(e.key==='Escape'&&current!=='menu'){goBack();return;}
+  if(current==='drill'&&drill.running&&!drill.busy){
+    if(e.key==='ArrowLeft'){e.preventDefault();drill.answer(true);}
+    if(e.key==='ArrowRight'){e.preventDefault();drill.answer(false);}
+  }
+});
+
+/* ================= ЗВУК: КНОПКА ================= */
+const sndBtn=$('#sound-btn');
+function syncSound(){
+  $('#snd-on').hidden=!SFX.on;$('#snd-off').hidden=SFX.on;
+  sndBtn.setAttribute('aria-pressed',String(SFX.on));
+  sndBtn.title=SFX.on?'Выключить звук':'Включить звук';
+}
+sndBtn.onclick=()=>{SFX.on=!SFX.on;state.sound=SFX.on;save();syncSound();if(SFX.on){SFX.unlock();SFX.tap();}toast(SFX.on?'🔊 Звук включён':'🔇 Звук выключен');};
+syncSound();
+renderMenuStars();
+
+/* ================= СТАРТ И ЗНАКОМСТВО ================= */
+const INTRO_FIELDS=[
+  {id:'in-surname',test:v=>v.trim().length>0},
+  {id:'in-name',   test:v=>v.trim().length>0},
+  {id:'in-email',  test:v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())}
+];
+function introCheckField(f){
+  const el=$('#'+f.id),wrap=el.closest('.field'),ok=f.test(el.value);
+  wrap.classList.toggle('invalid',!ok&&el.dataset.touched==='1');
+  return ok;
+}
+function introValidate(){
+  let all=true;
+  INTRO_FIELDS.forEach(f=>{if(!introCheckField(f))all=false;});
+  $('#next-btn').disabled=!all;
+  return all;
+}
+INTRO_FIELDS.forEach(f=>{
+  const el=$('#'+f.id);
+  el.addEventListener('input',introValidate);
+  el.addEventListener('blur',()=>{el.dataset.touched='1';introValidate();});
+});
+// предзаполнение для возвращающихся игроков
+$('#in-surname').value=state.surname||'';
+$('#in-name').value=state.name?state.name.split(' ')[0]:'';
+$('#in-email').value=state.email||'';
+if(state.surname)$('#in-surname').dataset.touched='1';
+if(state.name)$('#in-name').dataset.touched='1';
+if(state.email)$('#in-email').dataset.touched='1';
+introValidate();
+
+$('#start-btn').onclick=()=>{SFX.tap();showScreen('intro');setTimeout(()=>$('#in-surname').focus(),120);};
+$('#next-btn').onclick=()=>{
+  if(!introValidate()){INTRO_FIELDS.forEach(f=>{$('#'+f.id).dataset.touched='1';});introValidate();SFX.bad();return;}
+  state.surname=$('#in-surname').value.trim();
+  state.name=$('#in-name').value.trim();
+  state.email=$('#in-email').value.trim();
+  save();
+  SFX.ok();FX.burst(70,.5,.4);
+  toast('Добро пожаловать в академию, '+state.name+'! 🕵️');
+  showScreen('menu');
+};
+document.body.dataset.screen=current; // синхронизируем шапку при первой загрузке
+</script>
+</body>
+</html>

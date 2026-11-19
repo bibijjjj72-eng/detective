@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0a3fae">
-<title>Детектив-смартфон — учись, играя, будь в безопасности!</title>
+<title>Детектив-смартфон</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 <style>
-/* ============ ПАЛИТРА И БАЗА ============ */
+  
 :root{
   --navy:#0d2f7a; --navy2:#123a8f; --blue:#1565d8; --blue-deep:#0b46b8;
   --sky:#2f9bff; --sky2:#7fd4ff; --gold:#ffc93c; --gold2:#ffd76a;
@@ -34,7 +34,6 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 b{font-weight:900}
 
-/* ============ ФОН: СВЕЧЕНИЕ, ПУЗЫРИ, ВОЛНЫ, ЗЕРНО ============ */
 .bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55}
 .b1{width:420px;height:420px;left:-140px;top:6%;background:#37b6ff;animation:drift 26s ease-in-out infinite alternate}
@@ -46,7 +45,6 @@ b{font-weight:900}
 .grain{position:absolute;inset:0;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E")}
 .waves{position:absolute;left:0;right:0;bottom:0;width:100%;height:150px}
 
-/* ============ ВЕРХНЯЯ ПЛАШКА С АВТОРАМИ ============ */
 .topbar{
   position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:10px;
   padding:8px 14px;background:rgba(255,250,235,.95);backdrop-filter:blur(6px);
@@ -60,13 +58,11 @@ b{font-weight:900}
 .chip-max{color:var(--sub);font-size:11px}
 .credits{margin-left:auto;text-align:right;font-size:11.5px;line-height:1.4;font-weight:800;color:#1a3fa0}
 
-/* ============ КАРКАС ============ */
 .app{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:16px 16px 40px}
 .screen{display:none}
 .screen.active{display:block;animation:screenIn .4s cubic-bezier(.2,.8,.3,1)}
 @keyframes screenIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 
-/* ============ ГЛАВНОЕ МЕНЮ: ГЕРОЙ ============ */
 .hero{position:relative;display:grid;grid-template-columns:1fr 1.15fr;align-items:center;min-height:280px;margin-bottom:10px}
 .bubble{
   position:relative;z-index:2;background:#fff;border-radius:26px;padding:16px 18px;
@@ -86,7 +82,6 @@ b{font-weight:900}
 .hero-sparks{position:absolute;left:44%;top:2px;width:72px;z-index:3;animation:sparkle 2.2s ease-in-out infinite}
 @keyframes sparkle{0%,100%{opacity:.6;transform:scale(.94)}50%{opacity:1;transform:scale(1.06)}}
 
-/* ============ КАРТОЧКИ МЕНЮ ============ */
 .menu-list{display:flex;flex-direction:column;gap:13px}
 .game-card{
   position:relative;display:flex;align-items:center;gap:14px;width:100%;text-align:left;
@@ -120,7 +115,6 @@ b{font-weight:900}
 .game-card:hover .gc-arrow{transform:translateX(4px)}
 .gc-arrow svg{width:24px;height:24px;filter:drop-shadow(0 2px 2px rgba(160,80,0,.5))}
 
-/* ============ БАННЕР С КУБКОМ ============ */
 .banner{
   display:flex;align-items:center;gap:14px;margin-top:20px;padding:12px 22px;border-radius:999px;
   background:linear-gradient(180deg,#fff8e1,#ffe9a8);border:3px solid var(--gold2);
@@ -129,7 +123,6 @@ b{font-weight:900}
 .banner svg{width:62px;height:62px;flex:none;filter:drop-shadow(0 4px 5px rgba(160,90,0,.35))}
 .banner-text{flex:1;text-align:center;font-size:17.5px;font-weight:900;line-height:1.3;color:var(--navy)}
 
-/* ============ ШАПКИ ИГР ============ */
 .game-head{display:flex;align-items:center;gap:12px;margin:4px 0 16px}
 .back-btn{flex:none;width:46px;height:46px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 5px 0 #c9d8f2,0 10px 16px rgba(6,32,96,.3);transition:.15s}
 .back-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #c9d8f2}
@@ -137,7 +130,6 @@ b{font-weight:900}
 .gh-title{font-size:21px;font-weight:900;color:#fff;text-shadow:0 2px 10px rgba(6,32,96,.5);line-height:1.1}
 .gh-chip{margin-left:auto;flex:none;background:rgba(255,255,255,.95);border-radius:999px;padding:6px 12px;font-weight:900;font-size:13px;color:var(--navy);box-shadow:0 4px 10px rgba(6,32,96,.25)}
 
-/* ============ ОБЩИЕ ПАНЕЛИ И КНОПКИ ============ */
 .panel{background:linear-gradient(180deg,#fff,#eef5ff);border-radius:24px;padding:18px;box-shadow:0 12px 26px rgba(6,32,96,.3),inset 0 2px 0 #fff}
 .sub-note{font-size:12.5px;font-weight:700;color:var(--sub);margin-top:10px;line-height:1.4}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:900;font-size:16px;border-radius:999px;padding:13px 22px;transition:transform .15s,box-shadow .15s;user-select:none}
@@ -155,7 +147,6 @@ b{font-weight:900}
 .shake{animation:shake .45s}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
 
-/* ============ РЕЗУЛЬТАТЫ ============ */
 .result-box{text-align:center;padding:26px 20px}
 .res-mood svg{width:118px;height:104px;filter:drop-shadow(0 6px 8px rgba(6,32,96,.25))}
 .res-title{font-size:24px;font-weight:900;margin-top:6px}
@@ -168,7 +159,6 @@ b{font-weight:900}
 .res-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
 .medal{font-size:64px;line-height:1;animation:popStar .6s cubic-bezier(.2,.8,.3,1.6)}
 
-/* ============ ВИКТОРИНА ============ */
 .q-top{display:flex;justify-content:space-between;font-weight:900;color:#fff;font-size:14px;text-shadow:0 2px 6px rgba(6,32,96,.5);margin-bottom:8px}
 .q-bar{height:12px;border-radius:999px;background:rgba(255,255,255,.35);overflow:hidden;margin-bottom:14px;box-shadow:inset 0 2px 4px rgba(6,32,96,.25)}
 .q-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#ffd76a,#ff9800);transition:width .4s cubic-bezier(.2,.8,.3,1)}
@@ -188,7 +178,6 @@ b{font-weight:900}
 .q-fact p{flex:1;min-width:200px;font-size:13.5px;font-weight:700;line-height:1.45;color:#6b5200}
 .q-fact .btn{margin-top:4px}
 
-/* ============ КОМИКС ============ */
 .comic-panel{position:relative;border:4px solid var(--navy);border-radius:20px;padding:18px 16px 16px;background:#fff;background-image:radial-gradient(rgba(21,101,216,.13) 1.5px,transparent 1.6px);background-size:14px 14px;box-shadow:0 12px 26px rgba(6,32,96,.35);overflow:hidden}
 .comic-tag{position:absolute;top:10px;left:-4px;background:var(--gold);color:var(--navy);font-weight:900;font-size:12px;padding:4px 12px;border-radius:0 10px 10px 0;border:2px solid var(--navy);transform:rotate(-2deg);box-shadow:0 3px 6px rgba(6,32,96,.25)}
 .scene{margin-top:22px}
@@ -224,7 +213,6 @@ b{font-weight:900}
 .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.45);transition:.2s}
 .dot.on{background:var(--gold);transform:scale(1.3);box-shadow:0 0 8px rgba(255,201,60,.8)}
 
-/* ============ ТРЕНИРОВКА ============ */
 .drill-start{text-align:center;padding:26px 20px}
 .ds-icons{font-size:40px;letter-spacing:8px}
 .drill-start h3{font-size:22px;font-weight:900;margin:10px 0 8px}
@@ -256,7 +244,6 @@ b{font-weight:900}
 .key-hint{text-align:center;color:rgba(255,255,255,.85);font-size:12px;font-weight:700;margin-top:12px;text-shadow:0 1px 4px rgba(6,32,96,.5)}
 @media (hover:none){.key-hint{display:none}}
 
-/* ============ ЛОГИКА: ПАМЯТЬ + РЯДЫ ============ */
 .mode-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .chip-btn{background:rgba(255,255,255,.9);border:2px solid transparent;border-radius:999px;padding:8px 14px;font-weight:900;font-size:13.5px;color:var(--navy);box-shadow:0 4px 10px rgba(6,32,96,.25);transition:.15s}
 .chip-btn.on{background:linear-gradient(180deg,#ffd76a,#ffb300);border-color:#fff;color:#5b3a00;box-shadow:0 4px 0 var(--amber-deep)}
@@ -286,7 +273,6 @@ b{font-weight:900}
 .seq-hint{text-align:center;font-size:13px;font-weight:800;color:var(--sub);margin-top:14px;min-height:18px}
 .seq-title{text-align:center;font-size:17px;font-weight:900}
 
-/* ============ КВЕСТЫ ============ */
 .quest-hello{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .quest-hello .qh-txt{flex:1;min-width:180px}
 .quest-hello h3{font-size:18px;font-weight:900}
@@ -370,12 +356,10 @@ b{font-weight:900}
 .dip-date{font-size:12px;font-weight:800;color:var(--sub)}
 .dip-seal{position:absolute;right:14px;bottom:14px;width:64px;height:64px;border-radius:50%;border:3px solid var(--blue-deep);color:var(--blue-deep);display:grid;place-items:center;font-size:10px;font-weight:900;transform:rotate(-14deg);opacity:.85;line-height:1.2;text-align:center}
 
-/* ============ ТОСТ И КОНФЕТТИ ============ */
 #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,80px);z-index:600;background:var(--navy);color:#fff;font-weight:800;font-size:14px;padding:11px 20px;border-radius:999px;box-shadow:0 10px 24px rgba(6,32,96,.5);opacity:0;transition:.3s cubic-bezier(.2,.8,.3,1.3);pointer-events:none;max-width:88vw;text-align:center}
 #toast.show{transform:translate(-50%,0);opacity:1}
 #fx{position:fixed;inset:0;z-index:500;pointer-events:none}
 
-/* ============ АДАПТИВ ============ */
 @media(max-width:430px){
   .credits{font-size:10px}
   .bubble{font-size:14.5px;padding:13px 14px}
@@ -397,7 +381,6 @@ b{font-weight:900}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
-/* ============ СТАРТОВАЯ СТРАНИЦА И ЗНАКОМСТВО ============ */
 body[data-screen="start"] .topbar,
 body[data-screen="intro"] .topbar{display:none}
 
@@ -424,6 +407,11 @@ body[data-screen="intro"] .topbar{display:none}
 .field.invalid .err{display:block}
 .intro-note{font-size:12px;font-weight:700;color:var(--sub);text-align:center;margin:4px 0 16px;line-height:1.45}
 @media(max-width:430px){.start-title{font-size:26px}.start-credits{font-size:10px;max-width:70%}}
+
+.logout-btn{width:40px;height:40px;border-radius:50%;background:#fff;border:2px solid #f3c9cf;display:grid;place-items:center;box-shadow:0 3px 0 #f3c9cf;transition:.15s;flex:none}
+.logout-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #f3c9cf}
+.logout-btn svg{width:21px;height:21px}
+.logout-btn.arm{background:#ffe9ec;border-color:var(--red);box-shadow:0 3px 0 var(--red-deep);animation:hintPulse .5s 2}
 </style>
 </head>
 <body data-screen="start">
@@ -448,7 +436,6 @@ body[data-screen="intro"] .topbar{display:none}
   <div class="grain"></div>
 </div>
 
-<!-- Верхняя плашка: авторы (как на втором фото) + звук и звёзды -->
 <header class="topbar">
   <div class="tb-left">
     <button type="button" class="sound-btn" id="sound-btn" aria-pressed="true" title="Выключить звук" aria-label="Звук">
@@ -456,12 +443,17 @@ body[data-screen="intro"] .topbar{display:none}
       <svg id="snd-off" viewBox="0 0 24 24" fill="none" hidden><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#8fb0e0"/><path d="M16 9l6 6M22 9l-6 6" stroke="#d92637" stroke-width="2.4" stroke-linecap="round"/></svg>
     </button>
     <span class="chip" id="stars-chip">⭐ 0<span class="chip-max">/15</span></span>
+    <button type="button" class="logout-btn" id="logout-btn" title="Выйти из аккаунта" aria-label="Выйти из аккаунта">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M14 4H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7" stroke="#0d2f7a" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M10 12h10M17 8.5L20.5 12 17 15.5" stroke="#d92637" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
   </div>
 </header>
 
 <main class="app">
 
-      <!-- ================= СТАРТОВАЯ СТРАНИЦА ================= -->
   <section id="screen-start" class="screen active">
     <div class="start-screen">
       <h1 class="start-title">Детектив-смартфон</h1>
@@ -478,7 +470,7 @@ body[data-screen="intro"] .topbar{display:none}
     </div>
   </section>
 
-  <!-- ================= ЗНАКОМСТВО ================= -->
+  
   <section id="screen-intro" class="screen">
     <div class="intro-screen">
       <div class="panel intro-panel">
@@ -505,7 +497,7 @@ body[data-screen="intro"] .topbar{display:none}
     </div>
   </section>
 
-  <!-- ================= ГЛАВНОЕ МЕНЮ ================= -->
+  
   <section id="screen-menu" class="screen">
     <div class="hero">
       <svg class="hero-sparks" viewBox="0 0 72 60" aria-hidden="true">
@@ -513,7 +505,7 @@ body[data-screen="intro"] .topbar{display:none}
       </svg>
       <div class="bubble">Выбери игру и стань настоящим детективом в&nbsp;мире интернета!</div>
       <div class="robot-wrap">
-        <!-- Робот Байт -->
+        
         <svg class="robot-svg" viewBox="0 0 340 360" role="img" aria-label="Робот-детектив Байт с лупой и щитом">
           <defs>
             <radialGradient id="rb-halo" cx="50%" cy="45%" r="55%">
@@ -693,7 +685,7 @@ body[data-screen="intro"] .topbar{display:none}
     </div>
   </section>
 
-  <!-- ================= ИГРОВЫЕ ЭКРАНЫ ================= -->
+  
   <section id="screen-quiz" class="screen">
     <div class="game-head">
       <button type="button" class="back-btn" aria-label="Назад в меню"><svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="#0d2f7a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -741,19 +733,16 @@ body[data-screen="intro"] .topbar{display:none}
 
 <script>
 'use strict';
-/* ================= УТИЛИТЫ ================= */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const shuffle=a=>{const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtTime=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
 
-/* ================= СОХРАНЕНИЕ ================= */
 const KEY='cyberdetective_v1';
 let state={sound:true,name:'',surname:'',email:'',stars:{quiz:0,comic:0,drill:0,memory:0,quest:0},best:{quiz:0,drill:0,moves6:0,moves8:0},questDone:[false,false,false,false,false]};
 try{const raw=localStorage.getItem(KEY);if(raw){const p=JSON.parse(raw);state={...state,...p,stars:{...state.stars,...(p.stars||{})},best:{...state.best,...(p.best||{})},questDone:Array.isArray(p.questDone)&&p.questDone.length===5?p.questDone:state.questDone};}}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
 
-/* ================= ЗВУК (WebAudio-синтез) ================= */
 const SFX={ctx:null,master:null,on:state.sound,
   unlock(){try{if(!this.ctx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;this.ctx=new AC();this.master=this.ctx.createGain();this.master.gain.value=.85;this.master.connect(this.ctx.destination);}if(this.ctx.state==='suspended')this.ctx.resume();}catch(e){}},
   tone(f,delay,dur,type,vol,slide){if(!this.on||!this.ctx)return;try{const t=this.ctx.currentTime+delay;const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(40,f+slide),t+dur);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol||.3,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(this.master);o.start(t);o.stop(t+dur+.05);}catch(e){}},
@@ -769,7 +758,6 @@ const SFX={ctx:null,master:null,on:state.sound,
 };
 document.addEventListener('pointerdown',()=>SFX.unlock(),{passive:true});
 
-/* ================= КОНФЕТТИ ================= */
 const FX={cv:$('#fx'),ctx:null,p:[],raf:0,
   resize(){const d=Math.min(2,window.devicePixelRatio||1);this.cv.width=innerWidth*d;this.cv.height=innerHeight*d;this.cv.style.width=innerWidth+'px';this.cv.style.height=innerHeight+'px';this.ctx=this.cv.getContext('2d');this.ctx.setTransform(d,0,0,d,0,0);},
   burst(n=110,ox=.5,oy=.32){if(!this.ctx)this.resize();const C=['#ffc93c','#ff9800','#2f9bff','#7fd4ff','#ffffff','#22b573','#ff4fa0'];for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=4+Math.random()*7;this.p.push({x:innerWidth*ox+(Math.random()-.5)*90,y:innerHeight*oy,vx:Math.cos(a)*s,vy:Math.sin(a)*s-4,g:.15+Math.random()*.09,r:Math.random()*Math.PI,vr:(Math.random()-.5)*.3,s:5+Math.random()*6,c:C[i%C.length],sh:i%3,l:90+Math.random()*50});}if(!this.raf)this.loop();},
@@ -777,16 +765,13 @@ const FX={cv:$('#fx'),ctx:null,p:[],raf:0,
 };
 addEventListener('resize',()=>FX.resize());FX.resize();
 
-/* ================= ТОСТ ================= */
 let toastT=0;
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2100);}
 
-/* ================= ЗВЁЗДЫ И НАГРАДЫ ================= */
 const starSVG=(f,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z" fill="${f?'#ffc93c':'#e3ecfb'}" stroke="${f?'#e07f00':'#b9cdf0'}" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
 function renderMenuStars(){$$('[data-stars]').forEach(el=>{const n=state.stars[el.dataset.stars]||0;el.innerHTML=[0,1,2].map(i=>starSVG(i<n,13)).join('');});const total=Object.values(state.stars).reduce((a,b)=>a+b,0);$('#stars-chip').innerHTML=`⭐ ${total}<span class="chip-max">/15</span>`;}
 function award(game,stars){if(stars>(state.stars[game]||0)){state.stars[game]=stars;save();}renderMenuStars();}
 
-/* ================= РОБОТ-ЭМОЦИЯ (мини) ================= */
 function robotMood(mood){
   let eyes='',mouth='',extra='';
   if(mood==='wow'){eyes=`<circle cx="44" cy="56" r="12" fill="#fff"/><circle cx="44" cy="58" r="6" fill="#071a3d"/><circle cx="41" cy="53" r="2.6" fill="#fff"/><circle cx="76" cy="56" r="12" fill="#fff"/><circle cx="76" cy="58" r="6" fill="#071a3d"/><circle cx="73" cy="53" r="2.6" fill="#fff"/>`;mouth=`<ellipse cx="60" cy="78" rx="7" ry="9" fill="#3d0f26"/>`;}
@@ -795,7 +780,6 @@ function robotMood(mood){
   return `<svg viewBox="0 0 120 104" aria-hidden="true"><rect x="56" y="10" width="8" height="18" rx="4" fill="#9fb9e8" stroke="#0d2f7a" stroke-width="3"/><circle cx="60" cy="9" r="8" fill="#7fd4ff" stroke="#0d2f7a" stroke-width="3"/><circle cx="18" cy="58" r="10" fill="#ffb300" stroke="#0d2f7a" stroke-width="4"/><circle cx="102" cy="58" r="10" fill="#ffb300" stroke="#0d2f7a" stroke-width="4"/><rect x="18" y="26" width="84" height="66" rx="30" fill="#fff" stroke="#0d2f7a" stroke-width="5"/><rect x="28" y="36" width="64" height="46" rx="22" fill="#10306e" stroke="#0a2456" stroke-width="3"/><ellipse cx="60" cy="43" rx="24" ry="6" fill="#fff" opacity=".12"/>${extra}${eyes}${mouth}</svg>`;
 }
 
-/* ================= ОБЩИЙ ЭКРАН РЕЗУЛЬТАТА ================= */
 let resultSeq=0;
 function buildResult(container,o){
   const seq=++resultSeq;
@@ -814,7 +798,6 @@ function buildResult(container,o){
   else if(o.stars===1)setTimeout(()=>{if(seq===resultSeq)SFX.ok();},380);
 }
 
-/* ================= ВИКТОРИНА ================= */
 const QUIZ=[
  {i:'🔑',q:'Какой пароль самый надёжный?',o:['123456','qwerty','Kot#7Luna!2','Моё имя'],c:2,f:'Надёжный пароль — длинный, с большими и маленькими буквами, цифрами и символами.'},
  {i:'📍',q:'Незнакомец в сети просит твой адрес. Что сделаешь?',o:['Напишу, если он вежливый','Скажу только город','Не скажу и расскажу взрослым'],c:2,f:'Адрес, телефон и школа — личная информация. Незнакомцам её не говорят.'},
@@ -855,7 +838,6 @@ const quiz={body:$('#quiz-body'),chip:$('#quiz-chip'),order:[],idx:0,score:0,seq
   }
 };
 
-/* ================= КОМИКС-ДЕТЕКТИВ ================= */
 const COMIC=[
  {type:'intro'},
  {type:'chat',avatar:'❓',sender:'Незнакомец_2024',msgs:['Привет! 🎁 Ты выиграла ЗОЛОТОЙ ПРИЗ!','Жми скорее: <span class="msg-link">gold-priz.xyz</span>'],
@@ -903,7 +885,6 @@ const comic={body:$('#comic-body'),chip:$('#comic-chip'),idx:0,clues:0,
   }
 };
 
-/* ================= ТРЕНИРОВКА: ОПАСНО / БЕЗОПАСНО ================= */
 const DRILL_ITEMS=[
  {e:'🍲',s:'Мама',t:'«Ужин готов, приходи!»',safe:true},
  {e:'🎁',s:'Незнакомец',t:'«Ты выиграл приз! Введи данные карты родителей»',safe:false},
@@ -984,7 +965,6 @@ const drill={body:$('#drill-body'),chip:$('#drill-chip'),items:[],i:0,score:0,he
   }
 };
 
-/* ================= ЛОГИКА: ПАРЫ + РЯДЫ ================= */
 const MEM_EMO=['🔒','🛡️','🔑','🕵️','💻','📧','⭐','🎮'];
 const SEQ_ROUNDS=[
  {row:['🔵','🟡','🔵','🟡','🔵'],ans:'🟡',opts:['🔵','🟡','🟢','🟣'],hint:'Цвета чередуются: синий, жёлтый…'},
@@ -1062,7 +1042,6 @@ const memory={body:$('#memory-body'),chip:$('#memory-chip'),mode:'memory',pairs:
   }
 };
 
-/* ================= КВЕСТЫ И МИССИИ ================= */
 const MISSIONS=[
  {e:'🔐',t:'Секретный пароль',d:'Собери надёжный пароль из плиток',praise:'Теперь ты знаешь рецепт крепкого пароля!'},
  {e:'🎣',t:'Ловушка для фишера',d:'Найди опасные сайты среди безопасных',praise:'Фишер попался! Ты отлично видишь подделку.'},
@@ -1122,7 +1101,6 @@ const quest={body:$('#quest-body'),chip:$('#quest-chip'),view:'map',seq:0,to:0,
     this.body.querySelector('.dip-home').onclick=()=>{SFX.tap();showScreen('menu');};
     this.body.querySelector('.dip-again').onclick=()=>{SFX.tap();state.questDone=[false,false,false,false,false];state.stars.quest=0;save();renderMenuStars();this.showMap();};
   },
-  /* Миссия 1: конструктор пароля */
   m1(slot,seq){const bank=['К','т','7','!','Р','9','#','а','Z','5','?','L','2','&','о','X'];let pw='';
     const checks=[
       {t:'Не меньше 8 символов',f:p=>p.length>=8},
@@ -1151,7 +1129,7 @@ const quest={body:$('#quest-body'),chip:$('#quest-chip'),view:'map',seq:0,to:0,
     slot.querySelector('.pw-done').onclick=()=>this.success(0);
     upd();
   },
-  /* Миссия 2: фишинг */
+
   m2(slot,seq){const cards=shuffle([
     {e:'🏫',d:'mirny-school.ru',t:'Сайт нашей школы',bad:false},
     {e:'🎁',d:'priz-dlya-vseh.xyz',t:'«Забери бесплатный приз!»',bad:true},
@@ -1179,7 +1157,7 @@ const quest={body:$('#quest-body'),chip:$('#quest-chip'),view:'map',seq:0,to:0,
       fb.textContent=msg||'Попробуй ещё раз!';
     };
   },
-  /* Миссия 3: приватность */
+
   m3(slot,seq){const rows=[
     {id:'open',t:'Открытый профиль для всех',want:false,init:true},
     {id:'str',t:'Сообщения от незнакомцев',want:false,init:true},
@@ -1204,7 +1182,7 @@ const quest={body:$('#quest-body'),chip:$('#quest-chip'),view:'map',seq:0,to:0,
     };
     upd();
   },
-  /* Миссия 4: шифровка */
+
   m4(slot,seq){const word='ПАРОЛЬ';const letters=shuffle(word.split('').map((ch,i)=>({ch,i})));
     const slotsArr=Array(6).fill(null);
     slot.innerHTML=`<p class="mis-desc">Шифровка! Собери секретное слово, которое защищает аккаунт и которое <b>нельзя говорить никому</b>. Нажимай на буквы по порядку.</p>
@@ -1225,7 +1203,7 @@ const quest={body:$('#quest-body'),chip:$('#quest-chip'),view:'map',seq:0,to:0,
     slot.querySelectorAll('.c-slot').forEach(s=>s.onclick=()=>{const i=+s.dataset.s;if(slotsArr[i]===null)return;slotsArr[i]=null;SFX.flip();draw();});
     draw();
   },
-  /* Миссия 5: экзамен */
+
   m5(slot,seq){const opts=[
     {t:'Пойти — скин же редкий!',ok:false,n:'Опасно! За «подарком» может скрываться обманщик. Встречи с интернет-знакомыми — только вместе с родителями.'},
     {t:'Договориться о встрече втайне от всех',ok:false,n:'Секретность — главный признак обмана! О таких предложениях всегда рассказывай взрослым.'},
@@ -1241,7 +1219,6 @@ const quest={body:$('#quest-body'),chip:$('#quest-chip'),view:'map',seq:0,to:0,
   }
 };
 
-/* ================= НАВИГАЦИЯ ================= */
 const controllers={quiz,comic,drill,memory,quest};
 let current='start';
 function showScreen(name){
@@ -1261,7 +1238,7 @@ function goBack(){SFX.tap();
   if(current==='quest'&&(quest.view==='mission'||quest.view==='reward')){quest.showMap();return;}
   showScreen('menu');
 }
-const MENU_DISABLED=['drill','memory','quest'];
+const MENU_DISABLED=[''];
 $$('.game-card').forEach(c=>{
   if(MENU_DISABLED.includes(c.dataset.game))return;
   c.onclick=()=>{SFX.tap();showScreen(c.dataset.game);};
@@ -1277,7 +1254,6 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-/* ================= ЗВУК: КНОПКА ================= */
 const sndBtn=$('#sound-btn');
 function syncSound(){
   $('#snd-on').hidden=!SFX.on;$('#snd-off').hidden=SFX.on;
@@ -1288,7 +1264,6 @@ sndBtn.onclick=()=>{SFX.on=!SFX.on;state.sound=SFX.on;save();syncSound();if(SFX.
 syncSound();
 renderMenuStars();
 
-/* ================= СТАРТ И ЗНАКОМСТВО ================= */
 const INTRO_FIELDS=[
   {id:'in-surname',test:v=>v.trim().length>0},
   {id:'in-name',   test:v=>v.trim().length>0},
@@ -1310,7 +1285,7 @@ INTRO_FIELDS.forEach(f=>{
   el.addEventListener('input',introValidate);
   el.addEventListener('blur',()=>{el.dataset.touched='1';introValidate();});
 });
-// предзаполнение для возвращающихся игроков
+
 $('#in-surname').value=state.surname||'';
 $('#in-name').value=state.name?state.name.split(' ')[0]:'';
 $('#in-email').value=state.email||'';
@@ -1330,7 +1305,26 @@ $('#next-btn').onclick=()=>{
   toast('Добро пожаловать в академию, '+state.name+'! 🕵️');
   showScreen('menu');
 };
-document.body.dataset.screen=current; // синхронизируем шапку при первой загрузке
+const logoutBtn=$('#logout-btn');let logoutArmed=false,logoutT=0;
+function disarmLogout(){logoutArmed=false;clearTimeout(logoutT);logoutBtn.classList.remove('arm');logoutBtn.title='Выйти из аккаунта';}
+logoutBtn.onclick=()=>{
+  if(!logoutArmed){
+    logoutArmed=true;logoutBtn.classList.add('arm');
+    logoutBtn.title='Точно выйти? Нажми ещё раз';
+    SFX.flip();toast('🚪 Точно выйти? Прогресс будет удалён. Нажми ещё раз');
+    logoutT=setTimeout(disarmLogout,3000);return;
+  }
+  disarmLogout();
+  controllers[current]?.stop?.();resultSeq++;
+  state={sound:SFX.on,name:'',surname:'',email:'',stars:{quiz:0,comic:0,drill:0,memory:0,quest:0},best:{quiz:0,drill:0,moves6:0,moves8:0},questDone:[false,false,false,false,false]};
+  try{localStorage.removeItem(KEY);}catch(e){}
+  save();
+  INTRO_FIELDS.forEach(f=>{const el=$('#'+f.id);el.value='';delete el.dataset.touched;el.closest('.field').classList.remove('invalid');});
+  introValidate();renderMenuStars();
+  current='menu';showScreen('start');
+  SFX.bad();toast('👋 Ты вышел из аккаунта. До встречи, детектив!');
+};
+document.body.dataset.screen=current;
 </script>
 </body>
 </html>

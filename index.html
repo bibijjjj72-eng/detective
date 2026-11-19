@@ -412,6 +412,15 @@ body[data-screen="intro"] .topbar{display:none}
 .logout-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #f3c9cf}
 .logout-btn svg{width:21px;height:21px}
 .logout-btn.arm{background:#ffe9ec;border-color:var(--red);box-shadow:0 3px 0 var(--red-deep);animation:hintPulse .5s 2}
+
+.profile-btn{width:40px;height:40px;border-radius:50%;background:#fff;border:2px solid #cfe0f8;display:grid;place-items:center;box-shadow:0 3px 0 #cfe0f8;transition:.15s;flex:none}
+.profile-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #cfe0f8}
+.profile-btn svg{width:21px;height:21px}
+body[data-screen="profile"] .topbar{display:flex}
+.prof-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.prof-stat{background:#f2f7ff;border:2px solid #d7e6ff;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:900;color:var(--navy)}
+.prof-actions{display:flex;gap:10px;margin-top:14px}
+.prof-actions .btn{flex:1;margin-top:0}
 </style>
 </head>
 <body data-screen="start">
@@ -438,15 +447,23 @@ body[data-screen="intro"] .topbar{display:none}
 
 <header class="topbar">
   <div class="tb-left">
-    <button type="button" class="sound-btn" id="sound-btn" aria-pressed="true" title="Выключить звук" aria-label="Звук">
-      <svg id="snd-on" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#0d2f7a"/><path d="M16 9c1.4 1.6 1.4 4.4 0 6M18.5 6.5c2.8 3 2.8 8 0 11" stroke="#1565d8" stroke-width="2" stroke-linecap="round"/></svg>
-      <svg id="snd-off" viewBox="0 0 24 24" fill="none" hidden><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#8fb0e0"/><path d="M16 9l6 6M22 9l-6 6" stroke="#d92637" stroke-width="2.4" stroke-linecap="round"/></svg>
-    </button>
-    <span class="chip" id="stars-chip">⭐ 0<span class="chip-max">/15</span></span>
-    <button type="button" class="logout-btn" id="logout-btn" title="Выйти из аккаунта" aria-label="Выйти из аккаунта">
+  <button type="button" class="sound-btn" id="sound-btn" aria-pressed="true" title="Выключить звук" aria-label="Звук">
+    <svg id="snd-on" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#0d2f7a"/><path d="M16 9c1.4 1.6 1.4 4.4 0 6M18.5 6.5c2.8 3 2.8 8 0 11" stroke="#1565d8" stroke-width="2" stroke-linecap="round"/></svg>
+    <svg id="snd-off" viewBox="0 0 24 24" fill="none" hidden><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#8fb0e0"/><path d="M16 9l6 6M22 9l-6 6" stroke="#d92637" stroke-width="2.4" stroke-linecap="round"/></svg>
+  </button>
+  <span class="chip" id="stars-chip">⭐ 0<span class="chip-max">/15</span></span>
+
+  <button type="button" class="logout-btn" id="logout-btn" title="Выйти из аккаунта" aria-label="Выйти из аккаунта">
     <svg viewBox="0 0 24 24" fill="none">
       <path d="M14 4H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7" stroke="#0d2f7a" stroke-width="2.4" stroke-linecap="round"/>
       <path d="M10 12h10M17 8.5L20.5 12 17 15.5" stroke="#d92637" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <button type="button" class="profile-btn" id="profile-btn" title="Редактировать профиль" aria-label="Редактировать профиль">
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="8" r="4" fill="#1565d8"/>
+      <path d="M4.5 20c1.2-3.6 4-5.4 7.5-5.4s6.3 1.8 7.5 5.4" stroke="#0d2f7a" stroke-width="2.4" stroke-linecap="round" fill="none"/>
     </svg>
   </button>
   </div>
@@ -497,7 +514,36 @@ body[data-screen="intro"] .topbar{display:none}
     </div>
   </section>
 
-  
+  <section id="screen-profile" class="screen">
+  <div class="intro-screen">
+    <div class="panel intro-panel">
+      <h2>Мой профиль 🕵️</h2>
+      <p class="intro-lead">Здесь можно исправить анкету байт-агентства.</p>
+      <div class="prof-stats" id="prof-stats"></div>
+      <div class="field" data-wrap="surname">
+        <label for="pf-surname">Фамилия <span class="req">*</span></label>
+        <input id="pf-surname" type="text" maxlength="40" autocomplete="family-name" placeholder="Например, Иванов">
+        <p class="err">Укажите фамилию</p>
+      </div>
+      <div class="field" data-wrap="name">
+        <label for="pf-name">Имя <span class="req">*</span></label>
+        <input id="pf-name" type="text" maxlength="40" autocomplete="given-name" placeholder="Например, Алексей">
+        <p class="err">Укажите имя</p>
+      </div>
+      <div class="field" data-wrap="email">
+        <label for="pf-email">E-mail родителей <span class="req">*</span></label>
+        <input id="pf-email" type="email" maxlength="80" autocomplete="email" placeholder="mama@pochta.ru">
+        <p class="err">Введите корректный e-mail (например, name@mail.ru)</p>
+      </div>
+      <p class="intro-note">🔒 Данные хранятся только в памяти твоего устройства и никуда не отправляются.</p>
+      <div class="prof-actions">
+        <button type="button" class="btn btn-white" id="pf-cancel">← Отмена</button>
+        <button type="button" class="btn btn-amber" id="pf-save" disabled>Сохранить ✓</button>
+      </div>
+    </div>
+  </div>
+</section>
+
   <section id="screen-menu" class="screen">
     <div class="hero">
       <svg class="hero-sparks" viewBox="0 0 72 60" aria-hidden="true">
@@ -1264,22 +1310,28 @@ sndBtn.onclick=()=>{SFX.on=!SFX.on;state.sound=SFX.on;save();syncSound();if(SFX.
 syncSound();
 renderMenuStars();
 
-const INTRO_FIELDS=[
+function makeForm(fields,btnSel){
+  const check=f=>{const el=$('#'+f.id),ok=f.test(el.value);el.closest('.field').classList.toggle('invalid',!ok&&el.dataset.touched==='1');return ok;};
+  const validate=()=>{let all=true;fields.forEach(f=>{if(!check(f))all=false;});$(btnSel).disabled=!all;return all;};
+  fields.forEach(f=>{const el=$('#'+f.id);
+    el.addEventListener('input',validate);
+    el.addEventListener('blur',()=>{el.dataset.touched='1';validate();});});
+  return {fields,validate,
+    touchAll(){fields.forEach(f=>{$('#'+f.id).dataset.touched='1';});return validate();},
+    fill(vals){fields.forEach((f,i)=>{const el=$('#'+f.id);el.value=vals[i]||'';delete el.dataset.touched;el.closest('.field').classList.remove('invalid');});validate();}};
+}
+const introForm=makeForm([
   {id:'in-surname',test:v=>v.trim().length>0},
   {id:'in-name',   test:v=>v.trim().length>0},
   {id:'in-email',  test:v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())}
-];
-function introCheckField(f){
-  const el=$('#'+f.id),wrap=el.closest('.field'),ok=f.test(el.value);
-  wrap.classList.toggle('invalid',!ok&&el.dataset.touched==='1');
-  return ok;
-}
-function introValidate(){
-  let all=true;
-  INTRO_FIELDS.forEach(f=>{if(!introCheckField(f))all=false;});
-  $('#next-btn').disabled=!all;
-  return all;
-}
+],'#next-btn');
+const profileForm=makeForm([
+  {id:'pf-surname',test:v=>v.trim().length>0},
+  {id:'pf-name',   test:v=>v.trim().length>0},
+  {id:'pf-email',  test:v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())}
+],'#pf-save');
+const INTRO_FIELDS=introForm.fields;
+const introValidate=introForm.validate;
 INTRO_FIELDS.forEach(f=>{
   const el=$('#'+f.id);
   el.addEventListener('input',introValidate);
@@ -1323,6 +1375,36 @@ logoutBtn.onclick=()=>{
   introValidate();renderMenuStars();
   current='menu';showScreen('start');
   SFX.bad();toast('👋 Ты вышел из аккаунта. До встречи, детектив!');
+};
+
+let profileReturn='menu';
+function openProfile(){
+  if(current==='start'||current==='intro'||current==='profile')return;
+  profileReturn=current;
+  profileForm.fill([state.surname,state.name,state.email]);
+  const total=Object.values(state.stars).reduce((a,b)=>a+b,0);
+  const rec=[];
+  if(state.best.quiz)rec.push(`🏆 Викторина: ${state.best.quiz}/8`);
+  if(state.best.drill)rec.push(`⚡ Тренировка: ${state.best.drill}`);
+  if(state.best.moves6)rec.push(`🃏 6 пар: ${state.best.moves6} ходов`);
+  if(state.best.moves8)rec.push(`🃏 8 пар: ${state.best.moves8} ходов`);
+  $('#prof-stats').innerHTML=`<span class="prof-stat">⭐ Звёзды: ${total}/15</span><span class="prof-stat">🎯 Миссии: ${state.questDone.filter(Boolean).length}/5</span>`+rec.map(r=>`<span class="prof-stat">${r}</span>`).join('');
+  SFX.tap();showScreen('profile');
+  setTimeout(()=>$('#pf-surname').focus(),120);
+}
+$('#profile-btn').onclick=openProfile;
+$('#pf-cancel').onclick=()=>{SFX.tap();showScreen(profileReturn);};
+$('#pf-save').onclick=()=>{
+  if(!profileForm.touchAll()){SFX.bad();return;}
+  state.surname=$('#pf-surname').value.trim();
+  state.name=$('#pf-name').value.trim();
+  state.email=$('#pf-email').value.trim();
+  save();
+  $('#in-surname').value=state.surname;$('#in-name').value=state.name;$('#in-email').value=state.email;
+  introValidate();
+  SFX.ok();FX.burst(60,.5,.35);
+  toast('Профиль обновлён, '+state.name+'! ✓');
+  showScreen(profileReturn);
 };
 document.body.dataset.screen=current;
 </script>
